@@ -188,11 +188,11 @@ public class Lexer {
         this.addToken(new WordToken(builder.toString(), line, position));
     }
 
-    private boolean isIllegalWordChar(int c) {
+    protected boolean isIllegalWordChar(int c) {
         return c == '`';
     }
 
-    private boolean isWordChar(int c) {
+    protected boolean isWordChar(int c) {
         return Character.isLetterOrDigit(c) || c == '_';
     }
 
