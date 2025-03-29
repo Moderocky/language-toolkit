@@ -63,8 +63,8 @@ public class Lexer {
         }
         if (wasNotNumber) wasNotNumber = false;
         else if (c == '-') {
-            this.readNumber((char) c);
-            return;
+            if (this.readNumber((char) c))
+                return;
         }
         switch (c) {
             case '{', '}', ';', '(', ')', '[', ']', '<', '>', ',', '.' -> this.readStructure((char) c);
@@ -95,7 +95,7 @@ public class Lexer {
         return true;
     }
 
-    protected void readNumber(char start) throws IOException {
+    protected boolean readNumber(char start) throws IOException {
         final StringBuilder builder = new StringBuilder();
         int line = reader.line();
         int position = reader.position() - 1;
@@ -104,7 +104,7 @@ public class Lexer {
         boolean hasDot = false;
         this.reader.mark(32);
         do {
-            this.reader.mark(1);
+            this.reader.mark(2);
             final int c = this.reader.read();
             ++count;
             if (c == -1) {
@@ -124,10 +124,9 @@ public class Lexer {
             }
         } while (available);
         if (builder.toString().equals("-")) {
-            this.reader.discard();
             this.wasNotNumber = true;
             this.reader.reset();
-            return;
+            return false;
         }
         if (builder.charAt(builder.length() - 1) == '.') {
             this.reader.unread(".");
@@ -138,6 +137,7 @@ public class Lexer {
             this.addToken(new NumberToken(text, Double.valueOf(text), line, position));
         else
             this.addToken(new NumberToken(text, Integer.valueOf(text), line, position));
+        return true;
     }
 
     protected void readToken(char start) throws IOException {

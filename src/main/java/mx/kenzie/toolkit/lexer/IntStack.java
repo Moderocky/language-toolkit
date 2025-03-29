@@ -1,6 +1,7 @@
 package mx.kenzie.toolkit.lexer;
 
 import java.util.EmptyStackException;
+import java.util.Iterator;
 import java.util.Stack;
 
 public class IntStack extends Stack<Integer> {
@@ -32,7 +33,7 @@ public class IntStack extends Stack<Integer> {
     public Integer push(Integer item) {
         this.grow();
         this.contents[size++] = item;
-        return super.push(item);
+        return item;
     }
 
     @Override
@@ -69,6 +70,30 @@ public class IntStack extends Stack<Integer> {
     @Override
     public synchronized boolean isEmpty() {
         return size == 0;
+    }
+
+    @Override
+    public synchronized String toString() {
+        System.out.print("size: " + size);
+        return super.toString();
+    }
+
+    @Override
+    public synchronized Iterator<Integer> iterator() {
+        return new Iterator<Integer>() {
+            @Override
+            public boolean hasNext() {
+                return i < size;
+            }
+
+            @Override
+            public Integer next() {
+                return contents[i++];
+            }
+
+            private int i = 0;
+
+        };
     }
 
 }
