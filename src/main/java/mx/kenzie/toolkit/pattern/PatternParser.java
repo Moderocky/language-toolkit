@@ -5,7 +5,7 @@ import mx.kenzie.toolkit.lexer.TokenStream;
 import mx.kenzie.toolkit.model.Model;
 import mx.kenzie.toolkit.parser.Parser;
 
-public record PatternParser(Pattern pattern, Assembler assembler) implements Parser {
+record PatternParser(Pattern pattern, Assembler assembler) implements Parser {
 
     @Override
     public Model parse(Parser outer, TokenStream input, boolean all) throws ParsingException {

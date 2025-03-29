@@ -2,6 +2,7 @@ package mx.kenzie.toolkit.pattern;
 
 import mx.kenzie.toolkit.error.ParsingException;
 import mx.kenzie.toolkit.lexer.Mark;
+import mx.kenzie.toolkit.lexer.Position;
 import mx.kenzie.toolkit.lexer.TokenStream;
 import mx.kenzie.toolkit.parser.Parser;
 
@@ -16,7 +17,8 @@ record Repeater(CharSequence... elements) implements Elements, SubParser {
     }
 
     @Override
-    public Inputs read(Parser outer, TokenStream input, boolean all) throws ParsingException {
+    public Inputs read(Parser outer, TokenStream input, boolean all) {
+        Position position = input.here();
         List<Object> list = new ArrayList<>(elements.length);
         do try (Mark mark = input.markForReset()) {
             Inputs read = SubParser.super.read(outer, input, false);
@@ -26,7 +28,7 @@ record Repeater(CharSequence... elements) implements Elements, SubParser {
             break;
         }
         while (input.hasNext());
-        return new Inputs(list);
+        return new Inputs(position, list);
     }
 
 }

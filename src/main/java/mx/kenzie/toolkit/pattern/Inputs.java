@@ -1,19 +1,31 @@
 package mx.kenzie.toolkit.pattern;
 
+import mx.kenzie.toolkit.lexer.Position;
+
 import java.util.Collection;
 import java.util.Iterator;
 
 public class Inputs implements Iterator<Object> {
 
+    protected final Position position;
     protected final Object[] data;
     protected int index;
 
-    public Inputs(Object... data) {
+    public Inputs(Position position, Object... data) {
+        this.position = position;
         this.data = data;
     }
 
+    public Inputs(Object... data) {
+        this(Position.NOWHERE, data);
+    }
+
+    public Inputs(Position position, Collection<?> data) {
+        this(position, data.toArray());
+    }
+
     public Inputs(Collection<?> data) {
-        this.data = data.toArray();
+        this(Position.NOWHERE, data);
     }
 
     public <Result> Iterable<Result> as(Class<Result> type) {

@@ -1,6 +1,7 @@
 package mx.kenzie.toolkit.pattern;
 
 import mx.kenzie.toolkit.error.ParsingException;
+import mx.kenzie.toolkit.lexer.Position;
 import mx.kenzie.toolkit.lexer.TokenStream;
 import mx.kenzie.toolkit.lexer.token.WordLikeToken;
 import mx.kenzie.toolkit.parser.Parser;
@@ -12,6 +13,7 @@ import java.util.List;
 interface SubParser {
 
     default Inputs read(Parser outer, TokenStream input, boolean all) throws ParsingException {
+        Position position = input.here();
         CharSequence[] elements = elements();
         int remaining = elements.length;
         List<Object> parts = new ArrayList<>(remaining);
@@ -21,7 +23,7 @@ interface SubParser {
         }
         if (all && input.hasNext())
             throw new ParsingException("Too many tokens remaining for '" + this + "': " + input.remaining());
-        return new Inputs(parts);
+        return new Inputs(position, parts);
     }
 
     default void parse(List<Object> results, CharSequence element, Parser outer, TokenStream input, boolean all)

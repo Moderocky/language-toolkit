@@ -8,6 +8,8 @@ public interface Model {
 
     void print(PrintStream stream);
 
-    Position position();
+    default Position position() {
+        return Position.NOWHERE;
+    }
 
 }
