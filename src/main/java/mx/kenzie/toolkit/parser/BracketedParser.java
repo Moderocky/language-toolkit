@@ -11,8 +11,13 @@ public interface BracketedParser extends Parser {
 
     default TokenList findMatching(TokenStream input, char open, char close)
     throws ParsingException {
+        return findMatching(this, input, open, close);
+    }
+
+    static TokenList findMatching(Parser outer, TokenStream input, char open, char close)
+    throws ParsingException {
         try (Mark mark = input.markForReset()) {
-            final StructureToken first = this.find(StructureToken.class, input);
+            final StructureToken first = outer.find(StructureToken.class, input);
             if (first.symbol() != open)
                 throw new ParsingException("Expected an opening " + open + " bracket, got " + first);
             int count = 1;

@@ -1,0 +1,46 @@
+package mx.kenzie.toolkit.pattern;
+
+import mx.kenzie.toolkit.error.PatternException;
+
+public record Pattern(CharSequence... elements) implements CharSequence, Elements, SubParser {
+
+    public static final CharSequence WORD = new Word(), NUMBER = new Number();
+
+    public static Pattern pattern(CharSequence... elements) {
+        return new Pattern(elements);
+    }
+
+    public static CharSequence round(CharSequence... elements) {
+        return brackets('(', ')', elements);
+    }
+
+    public static CharSequence curly(CharSequence... elements) {
+        return brackets('{', '}', elements);
+    }
+
+    public static CharSequence square(CharSequence... elements) {
+        return brackets('[', ']', elements);
+    }
+
+    public static CharSequence brackets(char open, char close, CharSequence... elements) {
+        return new Brackets(open, close, elements);
+    }
+
+    public static CharSequence repeat(CharSequence... elements) {
+        if (elements.length == 0)
+            throw new PatternException("No repeatable unit.");
+        return new Repeater(elements);
+    }
+
+    public static CharSequence csv(CharSequence... elements) {
+        if (elements.length == 0)
+            throw new PatternException("No repeatable unit.");
+        return new CSVRepeater(elements);
+    }
+
+    @Override
+    public String toString() {
+        return String.join(" ", elements);
+    }
+
+}
