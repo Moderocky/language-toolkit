@@ -38,6 +38,15 @@ public record Pattern(CharSequence... elements) implements CharSequence, Element
         return new CSVRepeater(elements);
     }
 
+    public CharSequence leftRecursive(Assembler assembler) {
+        if (elements.length < 2)
+            throw new PatternException("Left-recursive patterns must have 2 or more elements.");
+        CharSequence first = elements[0];
+        CharSequence[] rest = new CharSequence[elements.length - 1];
+        System.arraycopy(elements, 1, rest, 0, elements.length - 1);
+        return new LeftRecursive(assembler, first, rest);
+    }
+
     @Override
     public String toString() {
         return String.join(" ", elements);

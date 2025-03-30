@@ -13,8 +13,11 @@ import java.util.List;
 interface SubParser {
 
     default Inputs read(Parser outer, TokenStream input, boolean all) throws ParsingException {
+        return this.read(this.elements(), outer, input, all);
+    }
+
+    default Inputs read(CharSequence[] elements, Parser outer, TokenStream input, boolean all) throws ParsingException {
         Position position = input.here();
-        CharSequence[] elements = elements();
         int remaining = elements.length;
         List<Object> parts = new ArrayList<>(remaining);
         for (CharSequence element : elements) {

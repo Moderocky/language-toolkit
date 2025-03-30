@@ -9,11 +9,6 @@ import mx.kenzie.toolkit.lexer.token.Token;
 
 public interface BracketedParser extends Parser {
 
-    default TokenList findMatching(TokenStream input, char open, char close)
-    throws ParsingException {
-        return findMatching(this, input, open, close);
-    }
-
     static TokenList findMatching(Parser outer, TokenStream input, char open, char close)
     throws ParsingException {
         try (Mark mark = input.markForReset()) {
@@ -35,6 +30,11 @@ public interface BracketedParser extends Parser {
             }
             throw new ParsingException("Expected a closing " + close + " bracket matching " + open);
         }
+    }
+
+    default TokenList findMatching(TokenStream input, char open, char close)
+    throws ParsingException {
+        return findMatching(this, input, open, close);
     }
 
 }

@@ -81,6 +81,8 @@ public class IntStack extends Stack<Integer> {
     @Override
     public synchronized Iterator<Integer> iterator() {
         return new Iterator<Integer>() {
+            private int i = 0;
+
             @Override
             public boolean hasNext() {
                 return i < size;
@@ -90,8 +92,6 @@ public class IntStack extends Stack<Integer> {
             public Integer next() {
                 return contents[i++];
             }
-
-            private int i = 0;
 
         };
     }

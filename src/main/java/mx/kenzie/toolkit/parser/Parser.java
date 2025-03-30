@@ -38,8 +38,10 @@ public interface Parser {
         }
 
         ParsingException exception;
-        if (all) exception = new ParsingException("No " + unit + " match found for all " + input.remaining());
-        else exception = new ParsingException("No " + unit + " match found for " + input.next());
+        if (!input.hasNext()) exception = new ParsingException("No tokens remaining.");
+        else if (all)
+            exception = new ParsingException("No " + unit.name() + " match found for all " + input.remaining());
+        else exception = new ParsingException("No " + unit.name() + " match found for " + input.next());
         for (ParsingException error : errors) exception.addSuppressed(error);
         throw exception;
     }

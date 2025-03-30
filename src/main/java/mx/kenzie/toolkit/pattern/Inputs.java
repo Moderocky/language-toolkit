@@ -28,6 +28,20 @@ public class Inputs implements Iterator<Object> {
         this(Position.NOWHERE, data);
     }
 
+    public Inputs append(Object... data) {
+        Object[] newData = new Object[this.data.length + data.length];
+        System.arraycopy(this.data, 0, newData, 0, this.data.length);
+        System.arraycopy(data, 0, newData, this.data.length, data.length);
+        return new Inputs(this.position, newData);
+    }
+
+    public Inputs prepend(Position position, Object... data) {
+        Object[] newData = new Object[this.data.length + data.length];
+        System.arraycopy(data, 0, newData, 0, data.length);
+        System.arraycopy(this.data, 0, newData, data.length, this.data.length);
+        return new Inputs(this.position, newData);
+    }
+
     public <Result> Iterable<Result> as(Class<Result> type) {
         return () -> new Iterator<>() {
 
@@ -75,6 +89,10 @@ public class Inputs implements Iterator<Object> {
 
     public int size() {
         return data.length;
+    }
+
+    public Position position() {
+        return position;
     }
 
 }

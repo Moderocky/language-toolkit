@@ -1,5 +1,6 @@
 package mx.kenzie.toolkit.lexer;
 
+import mx.kenzie.toolkit.error.ParsingError;
 import mx.kenzie.toolkit.lexer.token.Token;
 
 import java.util.Arrays;
@@ -24,6 +25,8 @@ public class TokenStream implements Iterator<Token>, Iterable<Token> {
 
     @Override
     public Token next() {
+        if (current >= tokens.length)
+            throw new ParsingError("Reached the end of available tokens.");
         return tokens[current++];
     }
 
