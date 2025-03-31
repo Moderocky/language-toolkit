@@ -5,41 +5,41 @@ import mx.kenzie.toolkit.lexer.Position;
 import java.util.Collection;
 import java.util.Iterator;
 
-public class Inputs implements Iterator<Object> {
+public class Input implements Iterator<Object> {
 
     protected final Position position;
     protected final Object[] data;
     protected int index;
 
-    public Inputs(Position position, Object... data) {
+    public Input(Position position, Object... data) {
         this.position = position;
         this.data = data;
     }
 
-    public Inputs(Object... data) {
+    public Input(Object... data) {
         this(Position.NOWHERE, data);
     }
 
-    public Inputs(Position position, Collection<?> data) {
+    public Input(Position position, Collection<?> data) {
         this(position, data.toArray());
     }
 
-    public Inputs(Collection<?> data) {
+    public Input(Collection<?> data) {
         this(Position.NOWHERE, data);
     }
 
-    public Inputs append(Object... data) {
+    public Input append(Object... data) {
         Object[] newData = new Object[this.data.length + data.length];
         System.arraycopy(this.data, 0, newData, 0, this.data.length);
         System.arraycopy(data, 0, newData, this.data.length, data.length);
-        return new Inputs(this.position, newData);
+        return new Input(this.position, newData);
     }
 
-    public Inputs prepend(Position position, Object... data) {
+    public Input prepend(Position position, Object... data) {
         Object[] newData = new Object[this.data.length + data.length];
         System.arraycopy(data, 0, newData, 0, data.length);
         System.arraycopy(this.data, 0, newData, data.length, this.data.length);
-        return new Inputs(this.position, newData);
+        return new Input(this.position, newData);
     }
 
     public <Result> Iterable<Result> as(Class<Result> type) {
@@ -47,12 +47,12 @@ public class Inputs implements Iterator<Object> {
 
             @Override
             public boolean hasNext() {
-                return Inputs.this.hasNext();
+                return Input.this.hasNext();
             }
 
             @Override
             public Result next() {
-                return Inputs.this.next(type);
+                return Input.this.next(type);
             }
         };
     }

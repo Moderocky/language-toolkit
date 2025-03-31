@@ -21,12 +21,12 @@ record LeftRecursive(Assembler assembler, CharSequence recursive,
     }
 
     @Override
-    public Inputs read(Parser outer, TokenStream input, boolean all) throws ParsingException {
+    public Input read(Parser outer, TokenStream input, boolean all) throws ParsingException {
         Position position = input.here();
         Model model = this.parseFirst(outer, input);
         do try (Mark mark = input.markForReset()) {
-            Inputs read = SubParser.super.read(outer, input, false);
-            Inputs included = read.prepend(position, model);
+            Input read = SubParser.super.read(outer, input, false);
+            Input included = read.prepend(position, model);
             model = assembler.apply(included);
             mark.discard();
         } catch (ParsingException ex) {
@@ -34,14 +34,14 @@ record LeftRecursive(Assembler assembler, CharSequence recursive,
         } while (input.hasNext());
         if (all && input.hasNext())
             throw new ParsingException("Too many tokens remaining for '" + this + "': " + input.remaining());
-        return new Inputs(position, model);
+        return new Input(position, model);
     }
 
     private Model parseFirst(Parser outer, TokenStream input) throws ParsingException {
         CharSequence[] sub = new CharSequence[elements.length + 1];
         sub[0] = recursive;
         System.arraycopy(elements, 0, sub, 1, elements.length);
-        Inputs read = this.read(sub, outer, input, false);
+        Input read = this.read(sub, outer, input, false);
         return assembler.apply(read);
     }
 

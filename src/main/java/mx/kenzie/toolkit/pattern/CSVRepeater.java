@@ -19,17 +19,17 @@ record CSVRepeater(CharSequence... elements) implements Elements, SubParser {
 
 
     @Override
-    public Inputs read(Parser outer, TokenStream input, boolean all) throws ParsingException {
+    public Input read(Parser outer, TokenStream input, boolean all) throws ParsingException {
         Position position = input.here();
         List<Object> list = new ArrayList<>(elements.length);
         do try (Mark mark = input.markForReset()) {
-            Inputs read = SubParser.super.read(outer, input, false);
+            Input read = SubParser.super.read(outer, input, false);
             list.add(read);
             mark.discard();
         } catch (ParsingException ex) {
             break;
         } while (this.consumeComma(outer, input) && input.hasNext());
-        return new Inputs(position, list);
+        return new Input(position, list);
     }
 
     private boolean consumeComma(Parser outer, TokenStream input) throws ParsingException {

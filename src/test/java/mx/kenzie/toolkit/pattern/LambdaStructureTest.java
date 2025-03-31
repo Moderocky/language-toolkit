@@ -21,17 +21,11 @@ public class LambdaStructureTest {
         grammar.register(term, pattern("\\", WORD, ".", expression),
             inputs -> new Function(inputs.next(String.class), inputs.next(Expression.class))
         );
-        grammar.register(term, pattern(round(expression)), inputs -> inputs.next(Inputs.class).next(Expression.class));
+        grammar.register(term, pattern(round(expression)), inputs -> inputs.next(Input.class).next(Expression.class));
         grammar.register(term, pattern(WORD), inputs -> new Variable(inputs.next(String.class)));
         grammar.register(expression, pattern(term, term),
             inputs -> new Application(inputs.next(Expression.class), inputs.next(Expression.class))
         );
-//        grammar.register(expression,
-//            pattern(pattern(term, term).apply(
-//                inputs -> new Application(inputs.next(Expression.class), inputs.next(Expression.class))
-//            )),
-//            inputs -> inputs.next(Expression.class)
-//        );
 
         grammar.register(expression, pattern(term), inputs -> inputs.next(Expression.class));
         {
@@ -85,13 +79,13 @@ public class LambdaStructureTest {
         grammar.register(term, pattern("\\", WORD, ".", expression),
             inputs -> new Function(inputs.next(String.class), inputs.next(Expression.class))
         );
-        grammar.register(term, pattern(round(expression)), inputs -> inputs.next(Inputs.class).next(Expression.class));
+        grammar.register(term, pattern(round(expression)), inputs -> inputs.next(Input.class).next(Expression.class));
         grammar.register(term, pattern(WORD), inputs -> new Variable(inputs.next(String.class)));
         grammar.register(expression,
             pattern(pattern(term, term).leftRecursive(
                 inputs -> new Application(inputs.next(Expression.class), inputs.next(Expression.class))
             )),
-            inputs -> inputs.next(Inputs.class).next(Expression.class)
+            inputs -> inputs.next(Input.class).next(Expression.class)
         );
         grammar.register(expression, pattern(term), inputs -> inputs.next(Expression.class));
         {

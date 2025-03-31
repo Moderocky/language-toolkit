@@ -12,11 +12,11 @@ import java.util.List;
 
 interface SubParser {
 
-    default Inputs read(Parser outer, TokenStream input, boolean all) throws ParsingException {
+    default Input read(Parser outer, TokenStream input, boolean all) throws ParsingException {
         return this.read(this.elements(), outer, input, all);
     }
 
-    default Inputs read(CharSequence[] elements, Parser outer, TokenStream input, boolean all) throws ParsingException {
+    default Input read(CharSequence[] elements, Parser outer, TokenStream input, boolean all) throws ParsingException {
         Position position = input.here();
         int remaining = elements.length;
         List<Object> parts = new ArrayList<>(remaining);
@@ -26,7 +26,7 @@ interface SubParser {
         }
         if (all && input.hasNext())
             throw new ParsingException("Too many tokens remaining for '" + this + "': " + input.remaining());
-        return new Inputs(position, parts);
+        return new Input(position, parts);
     }
 
     default void parse(List<Object> results, CharSequence element, Parser outer, TokenStream input, boolean all)

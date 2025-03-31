@@ -9,7 +9,7 @@ record PatternParser(Pattern pattern, Assembler assembler) implements Parser, El
 
     @Override
     public Model parse(Parser outer, TokenStream input, boolean all) throws ParsingException {
-        Inputs inputs = pattern.read(outer, input, all);
+        Input inputs = pattern.read(outer, input, all);
         return assembler.apply(inputs);
     }
 
@@ -24,9 +24,9 @@ record PatternParser(Pattern pattern, Assembler assembler) implements Parser, El
     }
 
     @Override
-    public Inputs read(Parser outer, TokenStream input, boolean all) throws ParsingException {
-        Inputs read = SubParser.super.read(outer, input, all);
-        return new Inputs(read.position, assembler.apply(read));
+    public Input read(Parser outer, TokenStream input, boolean all) throws ParsingException {
+        Input read = SubParser.super.read(outer, input, all);
+        return new Input(read.position, assembler.apply(read));
     }
 
 }

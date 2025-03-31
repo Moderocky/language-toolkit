@@ -17,18 +17,18 @@ record Repeater(CharSequence... elements) implements Elements, SubParser {
     }
 
     @Override
-    public Inputs read(Parser outer, TokenStream input, boolean all) {
+    public Input read(Parser outer, TokenStream input, boolean all) {
         Position position = input.here();
         List<Object> list = new ArrayList<>(elements.length);
         do try (Mark mark = input.markForReset()) {
-            Inputs read = SubParser.super.read(outer, input, false);
+            Input read = SubParser.super.read(outer, input, false);
             list.add(read);
             mark.discard();
         } catch (ParsingException ex) {
             break;
         }
         while (input.hasNext());
-        return new Inputs(position, list);
+        return new Input(position, list);
     }
 
 }

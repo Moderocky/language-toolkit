@@ -25,7 +25,7 @@ public class PatternTest {
         return new TokenStream(list);
     }
 
-    protected Inputs test(Pattern pattern, String string) {
+    protected Input test(Pattern pattern, String string) {
         try {
             PatternParser parser = new PatternParser(pattern, _ -> null);
             return pattern.read(parser, sample(string), true);
@@ -37,19 +37,19 @@ public class PatternTest {
     @Test
     public void parseTestCSV() {
         Pattern pattern = pattern(csv(WORD));
-        Inputs inputs = this.test(pattern, "hello, there");
-        assert inputs.is(Inputs.class);
-        Inputs repeater = inputs.next(Inputs.class);
-        Inputs first = repeater.next(Inputs.class);
+        Input input = this.test(pattern, "hello, there");
+        assert input.is(Input.class);
+        Input repeater = input.next(Input.class);
+        Input first = repeater.next(Input.class);
         assert first.hasNext();
         assert first.next(String.class).equals("hello");
         assert !first.hasNext();
-        Inputs second = repeater.next(Inputs.class);
+        Input second = repeater.next(Input.class);
         assert second.hasNext();
         assert second.next(String.class).equals("there");
         assert !second.hasNext();
         assert !repeater.hasNext();
-        assert !inputs.hasNext();
+        assert !input.hasNext();
     }
 
     @Test(expected = AssertionError.class)
@@ -61,71 +61,71 @@ public class PatternTest {
     @Test
     public void parseTestRepeating() {
         Pattern pattern = pattern(repeat(WORD));
-        Inputs inputs = this.test(pattern, "hello there");
-        assert inputs.is(Inputs.class);
-        Inputs repeater = inputs.next(Inputs.class);
-        Inputs first = repeater.next(Inputs.class);
+        Input input = this.test(pattern, "hello there");
+        assert input.is(Input.class);
+        Input repeater = input.next(Input.class);
+        Input first = repeater.next(Input.class);
         assert first.hasNext();
         assert first.next(String.class).equals("hello");
         assert !first.hasNext();
-        Inputs second = repeater.next(Inputs.class);
+        Input second = repeater.next(Input.class);
         assert second.hasNext();
         assert second.next(String.class).equals("there");
         assert !second.hasNext();
         assert !repeater.hasNext();
-        assert !inputs.hasNext();
+        assert !input.hasNext();
     }
 
     @Test
     public void parseTestWordRepeating() {
         Pattern pattern = pattern("hello", repeat(WORD));
-        Inputs inputs = this.test(pattern, "hello there");
-        assert inputs.is(Inputs.class);
-        Inputs repeater = inputs.next(Inputs.class);
-        Inputs first = repeater.next(Inputs.class);
+        Input input = this.test(pattern, "hello there");
+        assert input.is(Input.class);
+        Input repeater = input.next(Input.class);
+        Input first = repeater.next(Input.class);
         assert first.hasNext();
         assert first.next(String.class).equals("there");
         assert !first.hasNext();
         assert !repeater.hasNext();
-        assert !inputs.hasNext();
+        assert !input.hasNext();
     }
 
     @Test
     public void parseTestWordRepeatingLiteral() {
         Pattern pattern = pattern("hello", repeat("there"));
-        Inputs inputs = this.test(pattern, "hello there");
-        assert inputs.is(Inputs.class);
-        Inputs repeater = inputs.next(Inputs.class);
-        Inputs first = repeater.next(Inputs.class);
+        Input input = this.test(pattern, "hello there");
+        assert input.is(Input.class);
+        Input repeater = input.next(Input.class);
+        Input first = repeater.next(Input.class);
         assert !first.hasNext();
         assert !repeater.hasNext();
-        assert !inputs.hasNext();
+        assert !input.hasNext();
     }
 
     @Test
     public void parseTestWordRepeatingLiteralTwice() {
         Pattern pattern = pattern("hello", repeat("there"));
-        Inputs inputs = this.test(pattern, "hello there there");
-        assert inputs.is(Inputs.class);
-        Inputs repeater = inputs.next(Inputs.class);
+        Input input = this.test(pattern, "hello there there");
+        assert input.is(Input.class);
+        Input repeater = input.next(Input.class);
         assert repeater.size() == 2;
-        Inputs first = repeater.next(Inputs.class);
+        Input first = repeater.next(Input.class);
         assert !first.hasNext();
-        Inputs second = repeater.next(Inputs.class);
+        Input second = repeater.next(Input.class);
         assert !second.hasNext();
         assert !repeater.hasNext();
-        assert !inputs.hasNext();
+        assert !input.hasNext();
     }
 
     @Test
     public void parseTestTwoWordInput() {
         Pattern pattern = pattern(WORD, WORD);
-        Inputs inputs = this.test(pattern, "hello there");
-        assert inputs.hasNext();
-        assert inputs.next(String.class).equals("hello");
-        assert inputs.hasNext();
-        assert inputs.next(String.class).equals("there");
-        assert !inputs.hasNext();
+        Input input = this.test(pattern, "hello there");
+        assert input.hasNext();
+        assert input.next(String.class).equals("hello");
+        assert input.hasNext();
+        assert input.next(String.class).equals("there");
+        assert !input.hasNext();
     }
 
     @Test(expected = AssertionError.class)
@@ -143,10 +143,10 @@ public class PatternTest {
     @Test
     public void parseTestWordInput() {
         Pattern pattern = pattern("hello", WORD);
-        Inputs inputs = this.test(pattern, "hello there");
-        assert inputs.hasNext();
-        assert inputs.next(String.class).equals("there");
-        assert !inputs.hasNext();
+        Input input = this.test(pattern, "hello there");
+        assert input.hasNext();
+        assert input.next(String.class).equals("there");
+        assert !input.hasNext();
     }
 
     @Test(expected = AssertionError.class)
@@ -164,10 +164,10 @@ public class PatternTest {
     @Test
     public void parseTestWordInputWord() {
         Pattern pattern = pattern("hello", WORD, "there");
-        Inputs inputs = this.test(pattern, "hello world there");
-        assert inputs.hasNext();
-        assert inputs.next(String.class).equals("world");
-        assert !inputs.hasNext();
+        Input input = this.test(pattern, "hello world there");
+        assert input.hasNext();
+        assert input.next(String.class).equals("world");
+        assert !input.hasNext();
     }
 
     @Test(expected = AssertionError.class)
@@ -179,8 +179,8 @@ public class PatternTest {
     @Test
     public void parseTestSimple() {
         Pattern pattern = pattern("hello", "there");
-        Inputs inputs = this.test(pattern, "hello there");
-        assert !inputs.hasNext();
+        Input input = this.test(pattern, "hello there");
+        assert !input.hasNext();
     }
 
     @Test(expected = AssertionError.class)
