@@ -2,8 +2,11 @@ package mx.kenzie.toolkit.pattern;
 
 import mx.kenzie.toolkit.lexer.Position;
 
+import java.lang.reflect.Array;
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Iterator;
+import java.util.List;
 
 public class Input implements Iterator<Object> {
 
@@ -93,6 +96,18 @@ public class Input implements Iterator<Object> {
 
     public Position position() {
         return position;
+    }
+
+    public <Result> Result[] consumeAll(Class<Result> type, boolean deep) {
+        List<Result> list = new ArrayList<>(this.size());
+        for (Object datum : data) {
+            if (type.isInstance(datum))
+                list.add(type.cast(datum));
+            else if (deep && datum instanceof Input input)
+                list.addAll(List.of(input.consumeAll(type, true)));
+        }
+        //noinspection unchecked
+        return list.toArray((Result[]) Array.newInstance(type, list.size()));
     }
 
 }
