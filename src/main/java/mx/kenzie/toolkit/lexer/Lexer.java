@@ -62,10 +62,6 @@ public class Lexer {
             return;
         }
         if (wasNotNumber) wasNotNumber = false;
-        else if (c == '-') {
-            if (this.readNumber((char) c))
-                return;
-        }
         switch (c) {
             case '{', '}', ';', '(', ')', '[', ']', '<', '>', ',', '.' -> this.readStructure((char) c);
             case '"', '\'' -> this.readString((char) c);
@@ -74,39 +70,16 @@ public class Lexer {
         }
     }
 
-    protected boolean readComment() throws IOException {
-        this.reader.mark(1);
-        int next = this.reader.read();
-        if (next != '*') {
-            this.reader.reset();
-            return false;
-        }
-        boolean star = false;
-        do {
-            int c = this.reader.read();
-            if (c == -1) {
-                this.available = false;
-                break;
-            }
-            if (c == '*') star = true;
-            else if (star && c == ')') break;
-            else star = false;
-        } while (available);
-        return true;
-    }
-
     protected boolean readNumber(char start) throws IOException {
         final StringBuilder builder = new StringBuilder();
         int line = reader.line();
         int position = reader.position() - 1;
         builder.append(start);
-        int count = 0;
         boolean hasDot = false;
         this.reader.mark(32);
         do {
             this.reader.mark(2);
             final int c = this.reader.read();
-            ++count;
             if (c == -1) {
                 this.available = false;
                 break;
@@ -116,27 +89,25 @@ public class Lexer {
             } else if (!hasDot && c == '.') {
                 hasDot = true;
                 builder.append((char) c);
-            } else if (count == 1 && c == 'x' || c == 'b') {
-                builder.append((char) c);
             } else {
                 this.reader.reset();
                 break;
             }
         } while (available);
-        if (builder.toString().equals("-")) {
-            this.wasNotNumber = true;
-            this.reader.reset();
-            return false;
-        }
+//        if (builder.toString().equals("-")) {
+//            this.wasNotNumber = true;
+//            this.reader.reset();
+//            return false;
+//        }
         if (builder.charAt(builder.length() - 1) == '.') {
             this.reader.unread(".");
             builder.deleteCharAt(builder.length() - 1);
         }
         final String text = builder.toString();
         if (hasDot)
-            this.addToken(new NumberToken(text, Double.valueOf(text), line, position));
+            this.addToken(new ResolvedNumberToken(text, Double.valueOf(text), line, position));
         else
-            this.addToken(new NumberToken(text, Integer.valueOf(text), line, position));
+            this.addToken(new IntegerToken(text, Integer.valueOf(text), line, position));
         return true;
     }
 

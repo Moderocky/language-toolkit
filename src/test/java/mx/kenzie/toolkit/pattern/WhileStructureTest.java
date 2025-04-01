@@ -59,6 +59,23 @@ public class WhileStructureTest {
                 && assignment.expression instanceof Variable variable
                 && variable.name.equals("X");
         }
+        {
+            Model parsed = grammar.parse(root, "program read X { Z := X; Y := Z } write Y");
+            assert parsed instanceof Program program
+                && program.name.equals("program")
+                && program.input.name.equals("X")
+                && program.output.name.equals("Y")
+                && program.body instanceof Block block
+                && block.statements.length == 2
+                && block.statements[0] instanceof Assignment assignment1
+                && assignment1.name.equals("Z")
+                && assignment1.expression instanceof Variable variable1
+                && variable1.name.equals("X")
+                && block.statements[1] instanceof Assignment assignment2
+                && assignment2.name.equals("Y")
+                && assignment2.expression instanceof Variable variable2
+                && variable2.name.equals("Z");
+        }
     }
 
     interface Expression extends GrammarTest.SimpleModel {
