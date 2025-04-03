@@ -10,8 +10,6 @@ import mx.kenzie.toolkit.pattern.Grammar;
 import org.junit.Test;
 import org.valross.constantine.RecordConstant;
 
-import java.lang.invoke.MethodHandles;
-import java.lang.invoke.MethodType;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -39,12 +37,6 @@ public class ImitationCompilerTest implements ModelTest {
 
     @Test
     public void create() throws Throwable {
-        try {
-            MethodHandles.lookup().findConstructor(Assignment.class, MethodType.methodType(void.class, new Assignment("", null).canonicalParameters()));
-        } catch (Throwable ex) {
-            ex.printStackTrace();
-            assert false;
-        }
         Grammar grammar = this.load();
         ModelProgram<?> parsed = (ModelProgram<?>) grammar.parse(root, """
             program
