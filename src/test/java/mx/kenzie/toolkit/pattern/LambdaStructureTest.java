@@ -1,5 +1,6 @@
 package mx.kenzie.toolkit.pattern;
 
+import mx.kenzie.toolkit.ModelTest;
 import mx.kenzie.toolkit.error.ParsingException;
 import mx.kenzie.toolkit.model.Model;
 import mx.kenzie.toolkit.parser.Unit;
@@ -146,7 +147,7 @@ public class LambdaStructureTest {
 
     }
 
-    interface Expression extends GrammarTest.SimpleModel {
+    interface Expression extends ModelTest.SimpleModel {
 
     }
 
@@ -154,7 +155,7 @@ public class LambdaStructureTest {
 
     }
 
-    record Assignment(String name, Expression expression) implements GrammarTest.SimpleModel {
+    record Assignment(String name, Expression expression) implements ModelTest.SimpleModel {
 
     }
 

@@ -1,5 +1,6 @@
 package mx.kenzie.toolkit.pattern;
 
+import mx.kenzie.toolkit.ModelTest;
 import mx.kenzie.toolkit.error.ParsingException;
 import mx.kenzie.toolkit.lexer.Position;
 import mx.kenzie.toolkit.model.Model;
@@ -15,7 +16,7 @@ public class GrammarTest {
     @Test
     public void register() throws ParsingException {
         final Unit a = () -> "a", b = () -> "b";
-        record Dummy(Position position, Model... models) implements SimpleModel {
+        record Dummy(Position position, Model... models) implements ModelTest.SimpleModel {
 
         }
 
@@ -32,15 +33,6 @@ public class GrammarTest {
 
     @Test
     public void parse() {
-    }
-
-    interface SimpleModel extends Model {
-
-        @Override
-        default void print(PrintStream stream) {
-            stream.print(this);
-        }
-
     }
 
 }

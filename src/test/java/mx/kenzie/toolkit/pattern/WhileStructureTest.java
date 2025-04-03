@@ -1,5 +1,6 @@
 package mx.kenzie.toolkit.pattern;
 
+import mx.kenzie.toolkit.ModelTest;
 import mx.kenzie.toolkit.error.ParsingException;
 import mx.kenzie.toolkit.model.Model;
 import mx.kenzie.toolkit.parser.Unit;
@@ -78,11 +79,11 @@ public class WhileStructureTest {
         }
     }
 
-    interface Expression extends GrammarTest.SimpleModel {
+    interface Expression extends ModelTest.SimpleModel {
 
     }
 
-    interface Statement extends GrammarTest.SimpleModel {
+    interface Statement extends ModelTest.SimpleModel {
 
     }
 
@@ -118,7 +119,7 @@ public class WhileStructureTest {
 
     }
 
-    record Program(String name, Variable input, Statement body, Variable output) implements GrammarTest.SimpleModel {
+    record Program(String name, Variable input, Statement body, Variable output) implements ModelTest.SimpleModel {
 
     }
 
