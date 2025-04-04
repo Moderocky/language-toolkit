@@ -69,6 +69,19 @@ Todo.
 
 ### Model
 
+## Imitation Compiler
+
+An immediate jump between imitation and compilation to the Java Virtual Machine is made possible using a combination of
+Valross's [Foundation](https://github.com/Moderocky/Foundation) and [Constantine](https://github.com/Moderocky/Foundation).
+The former has a bytecode assembler, the latter enables the concept of 'data-as-program'.
+
+### Data-as-Program
+
+The concept of 'programs-as-data' means treating (opaque, executable) programs as some kind of legible data structure,
+allowing the beginnings of reflection or program manipulation.
+
+Data-as-program is the opposite: turning a data structure into a program
+
 ## Pattern Parsing
 
 An easy-access tool for constructing patterns (for use with the standard lexer) is available out-of-the-box.

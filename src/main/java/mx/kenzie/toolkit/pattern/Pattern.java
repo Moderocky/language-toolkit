@@ -33,9 +33,13 @@ public record Pattern(CharSequence... elements) implements CharSequence, Element
     }
 
     public static CharSequence csv(CharSequence... elements) {
+        return separated(",", elements);
+    }
+
+    public static CharSequence separated(String separator, CharSequence... elements) {
         if (elements.length == 0)
             throw new PatternException("No repeatable unit.");
-        return new CSVRepeater(elements);
+        return new CSVRepeater(separator, elements);
     }
 
     public CharSequence leftRecursive(Assembler assembler) {

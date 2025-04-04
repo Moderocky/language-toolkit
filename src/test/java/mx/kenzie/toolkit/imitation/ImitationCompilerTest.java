@@ -55,18 +55,26 @@ public class ImitationCompilerTest implements ModelTest {
     }
 
 
-    protected static class TestContext implements ProgramContext {
-
-        public final Map<String, Object> variables = new HashMap<>();
-        public volatile Object output;
-
-    }
-
     protected interface Expression extends ModelExpression<TestContext, Object>, SimpleModel, RecordConstant {
 
     }
 
     protected interface Statement extends ModelStatement<TestContext>, RecordConstant, SimpleModel {
+
+    }
+
+    protected static class TestContext implements ProgramContext {
+
+        public final Map<String, Object> variables = new HashMap<>();
+        public volatile Object output;
+
+        @Override
+        public String toString() {
+            return "TestContext{" +
+                "variables=" + variables +
+                ", output=" + output +
+                '}';
+        }
 
     }
 

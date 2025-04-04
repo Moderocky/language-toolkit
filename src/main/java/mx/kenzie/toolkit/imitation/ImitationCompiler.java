@@ -2,7 +2,6 @@ package mx.kenzie.toolkit.imitation;
 
 import mx.kenzie.toolkit.model.imitation.ModelProgram;
 import mx.kenzie.toolkit.model.imitation.ProgramContext;
-import org.valross.constantine.Constant;
 import org.valross.foundation.Loader;
 import org.valross.foundation.assembler.ClassFile;
 import org.valross.foundation.assembler.code.OpCode;
@@ -15,8 +14,6 @@ import org.valross.foundation.detail.Version;
 
 import java.io.IOException;
 import java.io.OutputStream;
-import java.lang.invoke.MethodHandles;
-import java.lang.invoke.MethodType;
 import java.lang.reflect.InvocationTargetException;
 
 public class ImitationCompiler {

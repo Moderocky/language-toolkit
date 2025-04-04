@@ -10,11 +10,11 @@ import mx.kenzie.toolkit.parser.Parser;
 import java.util.ArrayList;
 import java.util.List;
 
-record CSVRepeater(CharSequence... elements) implements Elements, SubParser {
+record CSVRepeater(String separator, CharSequence... elements) implements Elements, SubParser {
 
     @Override
     public String toString() {
-        return String.join(" ", elements) + ", ...";
+        return String.join(" ", elements) + separator + " ...";
     }
 
 
@@ -33,7 +33,7 @@ record CSVRepeater(CharSequence... elements) implements Elements, SubParser {
     }
 
     private boolean consumeComma(Parser outer, TokenStream input) throws ParsingException {
-        return outer.expect(WordLikeToken.class, input, token -> token.value().equals(","));
+        return outer.expect(WordLikeToken.class, input, token -> token.value().equals(separator));
     }
 
 }
