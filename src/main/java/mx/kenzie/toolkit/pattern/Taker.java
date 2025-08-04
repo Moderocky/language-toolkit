@@ -2,6 +2,7 @@ package mx.kenzie.toolkit.pattern;
 
 import mx.kenzie.toolkit.error.ParsingException;
 import mx.kenzie.toolkit.lexer.TokenStream;
+import mx.kenzie.toolkit.lexer.token.NumberToken;
 import mx.kenzie.toolkit.lexer.token.ResolvedNumberToken;
 import mx.kenzie.toolkit.lexer.token.WordLikeToken;
 import mx.kenzie.toolkit.parser.Parser;
@@ -45,7 +46,7 @@ class Number implements Taker {
 
     @Override
     public Object take(TokenStream stream, Parser outer) throws ParsingException {
-        return outer.find(ResolvedNumberToken.class, stream).value();
+        return outer.find(NumberToken.class, stream).value();
     }
 
     @Override

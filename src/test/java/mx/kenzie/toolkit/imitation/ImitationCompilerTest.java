@@ -10,6 +10,7 @@ import mx.kenzie.toolkit.pattern.Grammar;
 import org.junit.Test;
 import org.valross.constantine.RecordConstant;
 
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -112,8 +113,11 @@ public class ImitationCompilerTest implements ModelTest {
 
     public record Program(Statement... statements) implements SimpleProgramModel<TestContext>, Statement {
 
-        @SafeVarargs
-        public Program {
+        @Override
+        public String toString() {
+            return "Program{" +
+                "statements=" + Arrays.toString(statements) +
+                '}';
         }
 
     }

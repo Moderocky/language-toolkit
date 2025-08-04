@@ -103,6 +103,11 @@ public class ImitationLambdaStructureTest extends ImitationCompilerTest {
             : context.output;
     }
 
+    @Override
+    public void create() throws Throwable {
+
+    }
+
     public record Function(String variable, Expression expression) implements Expression {
 
         @Override

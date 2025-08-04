@@ -222,6 +222,17 @@ public class PatternTest {
         Pattern pattern = pattern(curly(WORD, WORD));
         assert pattern.toString().equals("{<word> <word>}") : pattern.toString();
         assert pattern.elements().length == 1;
+        this.test(pattern, "{foo bar}");
+    }
+
+    @Test
+    public void curlyTestEmpty() {
+        Pattern pattern = pattern(curly(repeat(WORD)));
+        assert pattern.toString().equals("{<word>...}") : pattern.toString();
+        assert pattern.elements().length == 1;
+        this.test(pattern, "{foo bar}");
+        this.test(pattern, "{foo}");
+        this.test(pattern, "{}");
     }
 
     @Test

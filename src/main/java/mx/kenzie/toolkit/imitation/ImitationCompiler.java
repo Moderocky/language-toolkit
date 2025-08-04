@@ -19,10 +19,12 @@ import java.lang.reflect.InvocationTargetException;
 public class ImitationCompiler {
 
     protected final ModelProgram<?> program;
+    private final Loader loader;
     private transient ClassFile data;
 
     public ImitationCompiler(ModelProgram<?> program) {
         this.program = program;
+        this.loader = Loader.createDefault();
     }
 
     public void compile(OutputStream stream) throws IOException {
@@ -32,7 +34,7 @@ public class ImitationCompiler {
 
     public Class<?> load() throws IOException {
         this.build();
-        return Loader.DEFAULT.loadClass(data);
+        return loader.loadClass(data);
     }
 
     public <Context extends ProgramContext> ModelProgram<Context> create() throws IOException {
