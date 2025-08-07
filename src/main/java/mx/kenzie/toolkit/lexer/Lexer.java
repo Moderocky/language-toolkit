@@ -160,7 +160,7 @@ public class Lexer {
     }
 
     protected boolean isIllegalWordChar(int c) {
-        return c == '`';
+        return c == '`' || c == '}' || c == ')' || c == ']';
     }
 
     protected boolean isWordChar(int c) {

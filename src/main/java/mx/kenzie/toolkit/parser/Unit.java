@@ -19,4 +19,16 @@ public interface Unit extends CharSequence {
 
     String name();
 
+    static Unit of(String name) {
+        record Simple(String name) implements Unit {
+
+            @Override
+            public String toString() {
+                return name;
+            }
+
+        }
+        return new Simple(name);
+    }
+
 }

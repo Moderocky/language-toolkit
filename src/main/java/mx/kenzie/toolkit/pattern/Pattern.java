@@ -4,7 +4,7 @@ import mx.kenzie.toolkit.error.PatternException;
 
 public record Pattern(CharSequence... elements) implements CharSequence, Elements, SubParser {
 
-    public static final CharSequence WORD = new Word(), NUMBER = new Number();
+    public static final CharSequence WORD = new Word(), NUMBER = new Number(), TEXT = new Text(), NAME = new Identifier();
 
     public static Pattern pattern(CharSequence... elements) {
         return new Pattern(elements);
