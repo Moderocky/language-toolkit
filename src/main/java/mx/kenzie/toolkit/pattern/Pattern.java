@@ -42,13 +42,17 @@ public record Pattern(CharSequence... elements) implements CharSequence, Element
         return new CSVRepeater(separator, elements);
     }
 
-    public CharSequence leftRecursive(Assembler assembler) {
+    public LeftRecursive leftRecursive(Assembler assembler) {
         if (elements.length < 2)
             throw new PatternException("Left-recursive patterns must have 2 or more elements.");
         CharSequence first = elements[0];
         CharSequence[] rest = new CharSequence[elements.length - 1];
         System.arraycopy(elements, 1, rest, 0, elements.length - 1);
         return new LeftRecursive(assembler, first, rest);
+    }
+
+    public CharSequence leftRecursive(int limit, Assembler assembler) {
+        return new Limited<>(this.leftRecursive(assembler), limit);
     }
 
     @Override
