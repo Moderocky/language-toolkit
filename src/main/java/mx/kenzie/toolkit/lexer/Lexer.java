@@ -1,10 +1,13 @@
 package mx.kenzie.toolkit.lexer;
 
 import mx.kenzie.toolkit.error.ReadingException;
+import mx.kenzie.toolkit.lexer.concurrent.Block;
 import mx.kenzie.toolkit.lexer.token.*;
 
 import java.io.IOException;
 import java.io.Reader;
+import java.util.Objects;
+import java.util.concurrent.Semaphore;
 
 public class Lexer {
 
@@ -12,28 +15,62 @@ public class Lexer {
     protected static final int ESCAPE = '\\';
 
     protected final LexemeReader reader;
-    protected final TokenList tokens;
-    protected boolean available = true;
+    final TokenList tokens;
+    protected volatile boolean available = true;
     private boolean wasNotNumber;
+    final Block block = new Block();
 
     public Lexer(Reader reader) {
         if (reader instanceof LexemeReader ours) this.reader = ours;
         else this.reader = new LexemeReader(reader);
         this.tokens = new TokenList();
-        assert reader.markSupported();
+//        assert reader.markSupported();
+    }
+
+    protected Block block() {
+        return block;
     }
 
     protected void addToken(Token token) {
-        this.tokens.add(token);
+        synchronized (tokens) {
+            tokens.add(token);
+        }
+        block.wake();
     }
 
-    public TokenList run() throws IOException {
+    void markClosed() {
+        synchronized (this) {
+            available = false;
+        }
+        block.complete();
+    }
+
+    public Tokens run() throws IOException {
         if (!available) return tokens;
-        do {
-            this.readWhitespace();
-            this.readWord();
-        } while (available);
+        do this.step();
+        while (this.isAvailable());
         return tokens;
+    }
+
+    public TokenStream live() {
+        PendingTokenStream stream = new PendingTokenStream(this);
+        stream.tokens.removeWhitespace();
+        return stream;
+    }
+
+    public TokenStream live(boolean preserveWhitespace) {
+        if (preserveWhitespace)
+            return new PendingTokenStream(this);
+        return this.live();
+    }
+
+    public synchronized boolean isAvailable() {
+        return available;
+    }
+
+    protected void step() throws IOException {
+        this.readWhitespace();
+        this.readWord();
     }
 
     protected void readWhitespace() throws IOException {
@@ -44,7 +81,7 @@ public class Lexer {
             this.reader.mark(4);
             final int c = this.reader.read();
             if (c == -1) {
-                this.available = false;
+                this.markClosed();
                 break;
             } else if (Character.isWhitespace(c)) anyFound = true;
             else {
@@ -58,7 +95,7 @@ public class Lexer {
     protected void readWord() throws IOException {
         final int c = this.reader.read();
         if (c == -1) {
-            this.available = false;
+            this.markClosed();
             return;
         }
         if (wasNotNumber) wasNotNumber = false;
@@ -81,7 +118,7 @@ public class Lexer {
             this.reader.mark(2);
             final int c = this.reader.read();
             if (c == -1) {
-                this.available = false;
+                this.markClosed();
                 break;
             }
             if (Character.isDigit(c) || c == '_') {
@@ -122,7 +159,7 @@ public class Lexer {
             this.reader.mark(1);
             int c = this.reader.read();
             if (c == -1) {
-                this.available = false;
+                this.markClosed();
                 break;
             }
             if (c == '\n' && escape) {

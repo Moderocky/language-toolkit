@@ -1,8 +1,8 @@
 package mx.kenzie.toolkit.pattern;
 
 import mx.kenzie.toolkit.error.ParsingException;
-import mx.kenzie.toolkit.lexer.TokenList;
 import mx.kenzie.toolkit.lexer.TokenStream;
+import mx.kenzie.toolkit.lexer.Tokens;
 import mx.kenzie.toolkit.parser.BracketedParser;
 import mx.kenzie.toolkit.parser.Parser;
 
@@ -15,8 +15,8 @@ record Brackets(char open, char close, CharSequence... elements) implements Elem
 
     @Override
     public Input read(Parser outer, TokenStream input, boolean all) throws ParsingException {
-        TokenList list = BracketedParser.findMatching(outer, input, open, close);
-        TokenStream inner = new TokenStream(list);
+        Tokens list = BracketedParser.findMatching(outer, input, open, close);
+        TokenStream inner = list.stream();
         return SubParser.super.read(outer, inner, true);
     }
 

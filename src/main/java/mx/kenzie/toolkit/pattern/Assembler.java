@@ -6,8 +6,6 @@ import mx.kenzie.toolkit.model.Model;
 @FunctionalInterface
 public interface Assembler {
 
-    Model apply(Input input) throws ParsingException;
-
     static Assembler name(String name, Assembler assembler) {
         //<editor-fold desc="Named assembler wrapper" defaultstate="collapsed">
         class NamedAssembler implements Assembler {
@@ -26,5 +24,7 @@ public interface Assembler {
         return new NamedAssembler();
         //</editor-fold>
     }
+
+    Model apply(Input input) throws ParsingException;
 
 }

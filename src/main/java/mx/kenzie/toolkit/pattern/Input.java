@@ -42,7 +42,7 @@ public class Input implements Iterator<Object> {
         Object[] newData = new Object[this.data.length + data.length];
         System.arraycopy(data, 0, newData, 0, data.length);
         System.arraycopy(this.data, 0, newData, data.length, this.data.length);
-        return new Input(this.position, newData);
+        return new Input(position, newData);
     }
 
     public <Result> Iterable<Result> as(Class<Result> type) {

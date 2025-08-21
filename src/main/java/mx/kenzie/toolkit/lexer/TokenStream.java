@@ -1,34 +1,19 @@
 package mx.kenzie.toolkit.lexer;
 
-import mx.kenzie.toolkit.error.ParsingError;
 import mx.kenzie.toolkit.lexer.token.Token;
 
-import java.util.Arrays;
 import java.util.Iterator;
-import java.util.Stack;
 
-public class TokenStream implements Iterator<Token>, Iterable<Token> {
+public abstract class TokenStream implements Iterator<Token>, Iterable<Token> {
 
-    protected final Token[] tokens;
-    protected int current;
-    protected Stack<Integer> marks;
-
-    public TokenStream(TokenList tokens) {
-        this.tokens = tokens.toArray(new Token[0]);
-        this.marks = new Stack<>();
+    public TokenStream() {
     }
 
     @Override
-    public boolean hasNext() {
-        return current < tokens.length;
-    }
+    public abstract boolean hasNext();
 
     @Override
-    public Token next() {
-        if (current >= tokens.length)
-            throw new ParsingError("Reached the end of available tokens.");
-        return tokens[current++];
-    }
+    public abstract Token next();
 
     public Mark markForReset() {
         this.mark();
@@ -40,55 +25,23 @@ public class TokenStream implements Iterator<Token>, Iterable<Token> {
         return new SimpleMark(this, true);
     }
 
-    void mark() {
-        this.marks.push(current);
-    }
+    abstract void mark();
 
-    void reset() {
-        this.current = marks.pop();
-    }
+    abstract void reset();
 
-    void discard() {
-        this.marks.pop();
-    }
+    abstract void discard();
 
-    public void skip() {
-        ++this.current;
-    }
+    public abstract void skip();
 
     @Override
-    public Iterator<Token> iterator() {
-        return this;
-    }
+    public abstract Iterator<Token> iterator();
 
-    @Override
-    public String toString() {
-        return "TokenStream[" +
-            "remaining=" + Arrays.toString(Arrays.copyOfRange(tokens, current, tokens.length)) +
-            ", current=" + current +
-            ", marks=" + marks +
-            ']';
-    }
+    public abstract void revert();
 
-    public void revert() {
-        --this.current;
-    }
+    public abstract boolean hasAtLeast(int tokens);
 
-    public boolean hasAtLeast(int tokens) {
-        return current <= (this.tokens.length - tokens);
-    }
+    public abstract Tokens remaining();
 
-    public TokenList remaining() {
-        final TokenList list = new TokenList();
-        for (Token token : this) list.add(token);
-        return list;
-    }
-
-    public Position here() {
-        if (this.hasNext())
-            return Position.of(tokens[current]);
-        else if (tokens.length > 0) return Position.of(tokens[tokens.length - 1]);
-        else return new Position(0, 0);
-    }
+    public abstract Position here();
 
 }

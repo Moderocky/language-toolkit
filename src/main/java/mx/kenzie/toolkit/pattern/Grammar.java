@@ -2,15 +2,13 @@ package mx.kenzie.toolkit.pattern;
 
 import mx.kenzie.toolkit.error.ParsingException;
 import mx.kenzie.toolkit.lexer.Lexer;
-import mx.kenzie.toolkit.lexer.TokenList;
 import mx.kenzie.toolkit.lexer.TokenStream;
+import mx.kenzie.toolkit.lexer.Tokens;
 import mx.kenzie.toolkit.model.Model;
 import mx.kenzie.toolkit.parser.Parser;
 import mx.kenzie.toolkit.parser.Unit;
 
-import java.io.IOError;
-import java.io.IOException;
-import java.io.StringReader;
+import java.io.*;
 import java.util.*;
 
 public class Grammar implements Parser {
@@ -59,16 +57,34 @@ public class Grammar implements Parser {
     }
 
     public Model parse(Unit unit, String source) throws ParsingException {
-        Lexer lexer = new Lexer(new StringReader(source));
-        TokenList list;
+        return this.parse(unit, new StringReader(source));
+    }
+
+    public Model parse(Unit unit, Reader source) throws ParsingException {
+        Lexer lexer = new Lexer(source);
+        Tokens list;
         try {
             list = lexer.run();
         } catch (IOException e) {
             throw new IOError(e);
         }
         list.removeWhitespace();
-        TokenStream stream = new TokenStream(list);
+        TokenStream stream = list.stream();
         return this.parse(unit, stream);
+    }
+
+    public Model parseLive(Unit unit, Reader source) throws ParsingException {
+        Lexer lexer = new Lexer(source);
+        TokenStream stream = lexer.live();
+        return this.parse(this, unit, stream, true);
+    }
+
+    public Model parse(Unit unit, InputStream source) throws ParsingException {
+        return this.parse(unit, new InputStreamReader(source));
+    }
+
+    public Model parseLive(Unit unit, InputStream source) throws ParsingException {
+        return this.parseLive(unit, new InputStreamReader(source));
     }
 
 }

@@ -13,9 +13,11 @@ public class LexemeReader extends Reader {
     protected int line;
     protected Stack<Integer> marks;
     protected StringMemory buffer;
+    protected boolean closed;
 
     public LexemeReader(Reader reader) {
-        if (reader instanceof PushbackReader push) this.reader = push;
+        if (reader instanceof LexemeReader ours) this.reader = ours.reader;
+        else if (reader instanceof PushbackReader push) this.reader = push;
         else this.reader = new PushbackReader(reader, 16);
         this.marks = new IntStack();
     }
@@ -65,6 +67,7 @@ public class LexemeReader extends Reader {
     @Override
     public void close() throws IOException {
         this.reader.close();
+        this.closed = true;
     }
 
     public int position() {

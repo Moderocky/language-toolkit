@@ -2,8 +2,8 @@ package mx.kenzie.toolkit.parser;
 
 import mx.kenzie.toolkit.error.ParsingException;
 import mx.kenzie.toolkit.lexer.Mark;
-import mx.kenzie.toolkit.lexer.TokenList;
 import mx.kenzie.toolkit.lexer.TokenStream;
+import mx.kenzie.toolkit.lexer.Tokens;
 import mx.kenzie.toolkit.lexer.token.Token;
 import mx.kenzie.toolkit.lexer.token.WordLikeToken;
 import mx.kenzie.toolkit.model.Model;
@@ -48,8 +48,8 @@ public interface Parser {
 
     Model parse(Parser outer, TokenStream input, boolean all) throws ParsingException;
 
-    default TokenList take(TokenStream input, int amount) throws ParsingException {
-        TokenList list = new TokenList();
+    default Tokens take(TokenStream input, int amount) throws ParsingException {
+        Tokens list = Tokens.empty();
         for (int i = 0; i < amount; i++) {
             if (!input.hasNext()) throw new ParsingException("Reached end of tokens taking " + amount + " items.");
             list.add(input.next());
@@ -57,9 +57,9 @@ public interface Parser {
         return list;
     }
 
-    default <TokenType extends Token> TokenList getEverythingUntil(Class<? super TokenType> type, TokenStream input,
-                                                                   Predicate<TokenType> predicate) {
-        TokenList tokens = new TokenList();
+    default <TokenType extends Token> Tokens getEverythingUntil(Class<? super TokenType> type, TokenStream input,
+                                                                Predicate<TokenType> predicate) {
+        Tokens tokens = Tokens.empty();
         try (Mark _ = input.markForDiscard()) {
             while (input.hasNext()) {
                 Token next = input.next();

@@ -2,8 +2,8 @@ package mx.kenzie.toolkit.parser;
 
 import mx.kenzie.toolkit.error.ParsingException;
 import mx.kenzie.toolkit.lexer.Mark;
-import mx.kenzie.toolkit.lexer.TokenList;
 import mx.kenzie.toolkit.lexer.TokenStream;
+import mx.kenzie.toolkit.lexer.Tokens;
 import mx.kenzie.toolkit.lexer.token.StructureToken;
 import mx.kenzie.toolkit.model.Model;
 
@@ -12,17 +12,17 @@ import java.util.List;
 
 public interface CSVParser extends Parser {
 
-    default Model[] parseCSVs(Parser outer, TokenList list, Unit unit) throws ParsingException {
-        final TokenStream stream = new TokenStream(list);
+    default Model[] parseCSVs(Parser outer, Tokens list, Unit unit) throws ParsingException {
+        final TokenStream stream = list.stream();
         final List<Model> models = new ArrayList<>();
         outer:
         while (stream.hasNext()) {
-            TokenList until = new TokenList();
+            Tokens until = Tokens.empty();
             do {
                 try (Mark mark = stream.markForReset()) {
                     until.addAll(this.getEverythingUntil(StructureToken.class, stream, token -> token.symbol() == ','));
                     try {
-                        final Model parsed = this.parse(outer, unit, new TokenStream(until), true);
+                        final Model parsed = this.parse(outer, unit, until.stream(), true);
                         mark.discard();
                         models.add(parsed);
                         continue outer;

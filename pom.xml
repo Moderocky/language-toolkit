@@ -6,7 +6,7 @@
 
     <groupId>mx.kenzie</groupId>
     <artifactId>language-toolkit</artifactId>
-    <version>1.0.0</version>
+    <version>1.1.0</version>
 
     <properties>
         <maven.compiler.source>23</maven.compiler.source>
@@ -38,13 +38,13 @@
         <dependency>
             <groupId>org.valross</groupId>
             <artifactId>constantine</artifactId>
-            <version>1.0.0</version>
+            <version>1.1.0</version>
             <scope>provided</scope>
         </dependency>
         <dependency>
             <groupId>org.valross</groupId>
             <artifactId>foundation-assembler</artifactId>
-            <version>3.0.0</version>
+            <version>3.1.0</version>
             <scope>provided</scope>
         </dependency>
     </dependencies>

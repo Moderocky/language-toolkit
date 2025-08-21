@@ -2,8 +2,8 @@ package mx.kenzie.toolkit.parser;
 
 import mx.kenzie.toolkit.error.ParsingException;
 import mx.kenzie.toolkit.lexer.Mark;
-import mx.kenzie.toolkit.lexer.TokenList;
 import mx.kenzie.toolkit.lexer.TokenStream;
+import mx.kenzie.toolkit.lexer.Tokens;
 import mx.kenzie.toolkit.lexer.token.Token;
 import mx.kenzie.toolkit.lexer.token.WordLikeToken;
 import mx.kenzie.toolkit.model.Model;
@@ -47,12 +47,12 @@ public record PatternMatcher(List<Object> elements) {
                         if (token == null) {
                             models.add(outer.parse(outer, unit, input, all));
                         } else {
-                            TokenList list = new TokenList();
+                            Tokens list = Tokens.empty();
                             List<ParsingException> errors = new ArrayList<>();
                             boolean multiple = false, hasParsed = false;
                             for (Token thing : input) {
                                 if (thing instanceof WordLikeToken word && Objects.equals(word.value(), token)) {
-                                    TokenStream stream = new TokenStream(list);
+                                    TokenStream stream = list.stream();
                                     try {
                                         while (stream.hasNext())
                                             models.add(outer.parse(outer, unit, stream, !multiple));

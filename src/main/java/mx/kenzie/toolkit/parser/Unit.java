@@ -2,6 +2,18 @@ package mx.kenzie.toolkit.parser;
 
 public interface Unit extends CharSequence {
 
+    static Unit of(String name) {
+        record Simple(String name) implements Unit {
+
+            @Override
+            public String toString() {
+                return name;
+            }
+
+        }
+        return new Simple(name);
+    }
+
     @Override
     default int length() {
         return this.name().length();
@@ -18,17 +30,5 @@ public interface Unit extends CharSequence {
     }
 
     String name();
-
-    static Unit of(String name) {
-        record Simple(String name) implements Unit {
-
-            @Override
-            public String toString() {
-                return name;
-            }
-
-        }
-        return new Simple(name);
-    }
 
 }
