@@ -1,64 +1,96 @@
 package mx.kenzie.toolkit.lexer;
 
 import mx.kenzie.toolkit.error.ReadingException;
-import mx.kenzie.toolkit.lexer.concurrent.Block;
 import mx.kenzie.toolkit.lexer.token.*;
 
 import java.io.IOException;
 import java.io.Reader;
-import java.util.Objects;
-import java.util.concurrent.Semaphore;
+import java.util.LinkedList;
+import java.util.Queue;
+import java.util.concurrent.BlockingQueue;
+import java.util.concurrent.LinkedBlockingQueue;
 
 public class Lexer {
 
     protected static final int BUMP = '\uFFFF' + 1;
     protected static final int ESCAPE = '\\';
+    protected static final Token END = new Token() {
+        @Override
+        public String print() {
+            return "END";
+        }
+
+        @Override
+        public int line() {
+            return -1;
+        }
+
+        @Override
+        public int position() {
+            return -1;
+        }
+    };
 
     protected final LexemeReader reader;
-    final TokenList tokens;
+    Queue<Token> tokens;
     protected volatile boolean available = true;
     private boolean wasNotNumber;
-    final Block block = new Block();
 
     public Lexer(Reader reader) {
         if (reader instanceof LexemeReader ours) this.reader = ours;
         else this.reader = new LexemeReader(reader);
-        this.tokens = new TokenList();
-//        assert reader.markSupported();
-    }
-
-    protected Block block() {
-        return block;
     }
 
     protected void addToken(Token token) {
-        synchronized (tokens) {
-            tokens.add(token);
-        }
-        block.wake();
+        tokens.add(token);
     }
 
     void markClosed() {
         synchronized (this) {
             available = false;
         }
-        block.complete();
+        if (tokens instanceof BlockingQueue)
+            tokens.add(END);
+    }
+
+    Token poll() {
+        if (tokens instanceof BlockingQueue<Token> queue) {
+            try {
+                if (this.isAvailable())
+                    return queue.take();
+                if (queue.isEmpty()) {
+                    return END;
+                }
+                return queue.take();
+            } catch (InterruptedException e) {
+                Thread.currentThread().interrupt();
+            }
+            return END;
+        } else {
+            return tokens.poll();
+        }
     }
 
     public Tokens run() throws IOException {
-        if (!available) return tokens;
+        if (tokens != null) throw new IllegalStateException();
+        this.tokens = new LinkedList<>();
+        if (!available) return Tokens.from(tokens);
         do this.step();
-        while (this.isAvailable());
-        return tokens;
+        while (available);
+        return Tokens.from(tokens);
     }
 
     public TokenStream live() {
+        if (tokens != null) throw new IllegalStateException();
+        this.tokens = new LinkedBlockingQueue<>();
         PendingTokenStream stream = new PendingTokenStream(this);
         stream.tokens.removeWhitespace();
         return stream;
     }
 
     public TokenStream live(boolean preserveWhitespace) {
+        if (tokens != null) throw new IllegalStateException();
+        this.tokens = new LinkedBlockingQueue<>();
         if (preserveWhitespace)
             return new PendingTokenStream(this);
         return this.live();

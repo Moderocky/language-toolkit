@@ -25,23 +25,22 @@ public class StreamUnitTest {
             new Outer(input.next(String.class), input.consumeAll(Inner.class, true)));
         grammar.register(inner, pattern(WORD, ";"), _ -> new Inner());
     }
-//
-//    public static void main(String[] args) throws ParsingException {
-//        StreamUnitTest streamUnitTest = new StreamUnitTest();
-//        streamUnitTest.setUp();
-//        Model parse = streamUnitTest.grammar.parseLive(streamUnitTest.outer, System.in);
-//        System.out.println(parse);
-//
-//    }
 
     @Test
-    public void register() throws ParsingException {
+    public void parse1() throws ParsingException {
         Model parse = grammar.parseLive(outer, new StringReader("class foo { bar ; }"));
-        System.out.println(parse);
+        assert parse != null;
     }
 
     @Test
-    public void parse() {
+    public void parse2() throws ParsingException {
+        StringReader source = new StringReader("class foo { bar ; } class foo { bar ; }");
+        Lexer lexer = new Lexer(source);
+        TokenStream live = lexer.live();
+        Model first = grammar.parse(grammar, outer, live, false);
+        Model second = grammar.parse(grammar, outer, live, false);
+        assert first != null;
+        assert second != null;
     }
 
     private record Outer(String word, Inner... inners) implements ModelTest.SimpleModel {

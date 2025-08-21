@@ -52,7 +52,7 @@ public record PatternMatcher(List<Object> elements) {
                             boolean multiple = false, hasParsed = false;
                             for (Token thing : input) {
                                 if (thing instanceof WordLikeToken word && Objects.equals(word.value(), token)) {
-                                    TokenStream stream = list.stream();
+                                    TokenStream stream = list.forParsing();
                                     try {
                                         while (stream.hasNext())
                                             models.add(outer.parse(outer, unit, stream, !multiple));

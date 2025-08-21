@@ -13,7 +13,7 @@ import java.util.List;
 public interface CSVParser extends Parser {
 
     default Model[] parseCSVs(Parser outer, Tokens list, Unit unit) throws ParsingException {
-        final TokenStream stream = list.stream();
+        final TokenStream stream = list.forParsing();
         final List<Model> models = new ArrayList<>();
         outer:
         while (stream.hasNext()) {
@@ -22,7 +22,7 @@ public interface CSVParser extends Parser {
                 try (Mark mark = stream.markForReset()) {
                     until.addAll(this.getEverythingUntil(StructureToken.class, stream, token -> token.symbol() == ','));
                     try {
-                        final Model parsed = this.parse(outer, unit, until.stream(), true);
+                        final Model parsed = this.parse(outer, unit, until.forParsing(), true);
                         mark.discard();
                         models.add(parsed);
                         continue outer;

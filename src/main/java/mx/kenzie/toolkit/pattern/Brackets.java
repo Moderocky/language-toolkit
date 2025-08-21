@@ -16,7 +16,7 @@ record Brackets(char open, char close, CharSequence... elements) implements Elem
     @Override
     public Input read(Parser outer, TokenStream input, boolean all) throws ParsingException {
         Tokens list = BracketedParser.findMatching(outer, input, open, close);
-        TokenStream inner = list.stream();
+        TokenStream inner = list.forParsing();
         return SubParser.super.read(outer, inner, true);
     }
 

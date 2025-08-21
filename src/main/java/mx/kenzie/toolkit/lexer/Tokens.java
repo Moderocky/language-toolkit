@@ -12,6 +12,10 @@ public interface Tokens extends Iterable<Token> {
         return new TokenList();
     }
 
+    static Tokens from(Collection<Token> tokens) {
+        return new FixedTokenList(tokens);
+    }
+
     void removeWhitespace();
 
     boolean add(Token token);
@@ -22,7 +26,7 @@ public interface Tokens extends Iterable<Token> {
 
     Token last();
 
-    default TokenStream stream() {
+    default TokenStream forParsing() {
         return new KnownTokenStream(this);
     }
 
@@ -248,6 +252,37 @@ class TokenList implements Tokens {
             return count;
         }
 
+    }
+
+}
+
+class FixedTokenList extends ArrayList<Token> implements Tokens {
+
+    public FixedTokenList() {
+    }
+
+    public FixedTokenList(Collection<? extends Token> c) {
+        super(c);
+    }
+
+    @Override
+    public void removeWhitespace() {
+        this.removeIf(token -> token instanceof WhitespaceToken);
+    }
+
+    @Override
+    public Token first() {
+        return this.getFirst();
+    }
+
+    @Override
+    public Token last() {
+        return this.getLast();
+    }
+
+    @Override
+    public Token[] toArray() {
+        return this.toArray(new Token[0]);
     }
 
 }

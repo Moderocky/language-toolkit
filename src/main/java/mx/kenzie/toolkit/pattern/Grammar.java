@@ -69,14 +69,14 @@ public class Grammar implements Parser {
             throw new IOError(e);
         }
         list.removeWhitespace();
-        TokenStream stream = list.stream();
+        TokenStream stream = list.forParsing();
         return this.parse(unit, stream);
     }
 
     public Model parseLive(Unit unit, Reader source) throws ParsingException {
         Lexer lexer = new Lexer(source);
         TokenStream stream = lexer.live();
-        return this.parse(this, unit, stream, true);
+        return this.parse(this, unit, stream, false);
     }
 
     public Model parse(Unit unit, InputStream source) throws ParsingException {

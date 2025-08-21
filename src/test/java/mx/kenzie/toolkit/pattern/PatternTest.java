@@ -22,7 +22,7 @@ public class PatternTest {
             throw new AssertionError(ex);
         }
         list.removeWhitespace();
-        return list.stream();
+        return list.forParsing();
     }
 
     protected Input test(Pattern pattern, String string) {

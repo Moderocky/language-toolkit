@@ -1,6 +1,5 @@
 package mx.kenzie.toolkit.lexer;
 
-import mx.kenzie.toolkit.lexer.concurrent.Block;
 import mx.kenzie.toolkit.lexer.token.Token;
 
 import java.io.IOException;
@@ -13,11 +12,11 @@ class PendingTokenStream extends TokenStream {
     protected Stack<TokenList.Node> marks;
     protected TokenList.Node current, previous;
     protected final Lexer lexer;
-    protected final Block block;
+    protected boolean done;
 
     public PendingTokenStream(Lexer lexer) {
         this.lexer = lexer;
-        this.tokens = lexer.tokens;
+        this.tokens = new TokenList();
         this.current = tokens.first;
         this.marks = new Stack<>();
         Thread.ofVirtual().start(() -> {
@@ -28,34 +27,38 @@ class PendingTokenStream extends TokenStream {
                 lexer.markClosed();
             }
         });
-        this.block = lexer.block();
     }
 
-    void prompt() {
-        if (current == null) {
-            this.stepSafe();
-            synchronized (tokens) {
-                if (previous == null) {
-                    current = tokens.first;
-                } else {
-                    current = previous.next;
-                }
-            }
-        }
-//        if (current != null && current.next == null)
-//            this.stepSafe();
-    }
-
-    void stepSafe() {
-        block.await();
+    protected void setup() {
+        if (done || current != null || previous != null)
+            return;
+        this.poll();
     }
 
     @Override
     public boolean hasNext() {
-        if (current != null)
-            return true;
-        this.prompt();
-        return current != null;
+        return current != null || this.poll();
+    }
+
+    protected boolean poll() {
+        if (done) return false;
+        Token polled;
+        while ((polled = lexer.tokens.poll()) != null) {
+            this.tokens.add(polled);
+            if (previous == null) current = tokens.first;
+            else current = previous.next;
+        }
+        if (current == null) {
+            polled = lexer.poll();
+            if (polled == Lexer.END) {
+                done = true;
+                return false;
+            }
+            this.tokens.add(polled);
+            if (previous == null) current = tokens.first;
+            else current = previous.next;
+        }
+        return true;
     }
 
     @Override
@@ -64,12 +67,14 @@ class PendingTokenStream extends TokenStream {
             return current.token;
         } finally {
             previous = current;
-            current = current.next;
+            if (current != null)
+                current = current.next;
         }
     }
 
     @Override
     void mark() {
+        this.setup();
         this.marks.push(current);
     }
 
@@ -85,6 +90,8 @@ class PendingTokenStream extends TokenStream {
 
     @Override
     public void skip() {
+        this.setup();
+        if (current == null) throw new IllegalStateException();
         current = current.next;
     }
 
@@ -95,6 +102,8 @@ class PendingTokenStream extends TokenStream {
 
     @Override
     public void revert() {
+        this.setup();
+        if (current == null) throw new IllegalStateException();
         current = current.previous;
     }
 
@@ -103,8 +112,8 @@ class PendingTokenStream extends TokenStream {
         do {
             int following = 1 + current.following();
             if (following >= tokens) return true;
-            this.stepSafe();
-        } while (lexer.isAvailable());
+            this.poll();
+        } while (!done);
         return false;
     }
 
