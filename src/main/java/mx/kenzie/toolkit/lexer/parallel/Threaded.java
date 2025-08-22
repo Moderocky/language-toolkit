@@ -16,7 +16,13 @@ record Threaded<Input>(Iterable<Input> values,
         for (Input value : values) {
             Pending<Output> pending = new Pending<>();
             futures.add(pending);
-            service.submit(() -> pending.complete(function.apply(value)));
+            service.submit(() -> {
+                try {
+                    pending.complete(function.apply(value));
+                } catch (Exception e) {
+                    pending.complete(null);
+                }
+            });
         }
 
         Iterator<Supplier<Output>> iterator = futures.iterator();
@@ -56,6 +62,7 @@ class Pending<Output> implements Supplier<Output> {
 
     void complete(Output value) {
         synchronized (this) {
+            if (complete) return;
             this.value = value;
             this.complete = true;
             this.notifyAll();

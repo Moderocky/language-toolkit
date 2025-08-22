@@ -12,4 +12,10 @@ public record WordToken(String value, int line, int position) implements WordLik
         return builder.toString();
     }
 
+    @Override
+    public String toString() {
+        return "WordToken[" +
+            "value='" + value + "', " + line + ":" + position + ']';
+    }
+
 }

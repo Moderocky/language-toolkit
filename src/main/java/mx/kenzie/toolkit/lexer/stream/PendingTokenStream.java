@@ -28,6 +28,8 @@ public class PendingTokenStream extends TokenStream {
         this.tokens = parent.tokens;
         this.lexer = parent.lexer;
         this.marks = new ArrayDeque<>(parent.marks);
+        this.current = parent.current;
+        this.started = parent.started;
     }
 
     public PendingTokenStream(Lexer lexer, TokenList tokens) {
@@ -71,8 +73,7 @@ public class PendingTokenStream extends TokenStream {
         try {
             return current.token;
         } finally {
-            if (current != null)
-                current = current.next();
+            if (current != null) current = current.next();
         }
     }
 
@@ -141,8 +142,7 @@ public class PendingTokenStream extends TokenStream {
 
     @Override
     public Position here() {
-        if (current != null || this.hasNext())
-            return Position.of(current.token);
+        if (current != null || this.hasNext()) return Position.of(current.token);
         else if (!tokens.isEmpty()) return Position.of(tokens.last());
         else return new Position(0, 0);
     }
@@ -168,8 +168,7 @@ public class PendingTokenStream extends TokenStream {
             builder.append(current.token);
             current = current.next;
         }
-        if (lexer.isAvailable())
-            builder.append(", ...");
+        if (lexer.isAvailable()) builder.append(", ...");
         builder.append(']');
         return builder.toString();
     }
@@ -178,8 +177,6 @@ public class PendingTokenStream extends TokenStream {
 
         public PendingForked() {
             super(PendingTokenStream.this);
-            this.current = PendingTokenStream.this.current;
-            this.started = PendingTokenStream.this.started;
         }
 
     }

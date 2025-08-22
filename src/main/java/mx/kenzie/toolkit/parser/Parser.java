@@ -15,28 +15,39 @@ import java.util.function.Predicate;
 
 public interface Parser {
 
+    static String nameOf(Parser parser) {
+        return parser.getClass().getSimpleName();
+    }
+
+    CallStack callStack(Parser here);
+
+    void updateCallStack(Parser here, CallStack stack);
+
     default Model parse(Parser outer, Unit unit, TokenStream input) throws ParsingException {
         return this.parse(outer, unit, input, false);
     }
 
     default Model parse(Parser outer, Unit unit, TokenStream input, boolean all) throws ParsingException {
         final List<ParsingException> errors = new ArrayList<>();
+        CallStack stack = outer.callStack(outer);
         Parallel<Parser> parallel = input.parallel(this.parsers(outer, unit));
         Iterable<Result> spread = parallel.spread(parser -> {
+            outer.updateCallStack(this, stack);
             TokenStream stream = input.fork();
             try (Mark mark = stream.markForReset()) {
                 try {
                     final Model stmt = parser.parse(outer, stream, all);
                     if (stmt == null)
-                        throw new ParsingException("Nothing returned by " + parser.getClass().getSimpleName());
+                        throw new ParsingException("Nothing returned by " + nameOf(parser));
                     if (all && stream.hasNext())
-                        throw new ParsingException("Too many tokens remaining for " + parser.getClass()
-                            .getSimpleName() + ": " + stream.remaining());
+                        throw new ParsingException("Too many tokens remaining for " + nameOf(parser) + ": " + stream.remaining());
                     mark.discard();
                     return Result.of(stmt, stream.forkPoint());
                 } catch (ParsingException fault) {
                     return Result.of(fault);
                 }
+            } catch (Throwable fault) {
+                return Result.of(new ParsingException("Unhandled error.", fault));
             }
         });
         for (Result result : spread) {

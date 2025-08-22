@@ -4,6 +4,7 @@ import mx.kenzie.toolkit.error.ParsingException;
 import mx.kenzie.toolkit.lexer.Lexer;
 import mx.kenzie.toolkit.lexer.stream.TokenStream;
 import mx.kenzie.toolkit.model.Model;
+import mx.kenzie.toolkit.parser.CallStack;
 import mx.kenzie.toolkit.parser.Parser;
 import mx.kenzie.toolkit.parser.Unit;
 
@@ -11,6 +12,8 @@ import java.io.*;
 import java.util.*;
 
 public class Grammar implements Parser {
+
+    protected final ThreadLocal<CallStack> callStack = ThreadLocal.withInitial(CallStack::empty);
 
     final Map<Unit, Collection<PatternParser>> parsers;
 
@@ -34,6 +37,16 @@ public class Grammar implements Parser {
     public void copy(Unit to, Unit from) {
         final var parsers = this.parsers.computeIfAbsent(to, _ -> new ArrayList<>());
         parsers.addAll(this.parsers.computeIfAbsent(from, _ -> new ArrayList<>()));
+    }
+
+    @Override
+    public CallStack callStack(Parser outer) {
+        return callStack.get();
+    }
+
+    @Override
+    public void updateCallStack(Parser outer, CallStack stack) {
+        this.callStack.set(stack);
     }
 
     @Override

@@ -44,6 +44,18 @@ public class StreamUnitTest {
         assert second != null;
     }
 
+    @Test
+    public void parseInfinite() throws ParsingException {
+        Grammar grammar = new Grammar();
+        grammar.register(outer, pattern(outer, "blob"), _ -> new Inner());
+        grammar.register(outer, pattern("blob"), _ -> new Inner());
+        StringReader source = new StringReader("blob");
+        Lexer lexer = new Lexer(source);
+        TokenStream live = lexer.live();
+        Model first = grammar.parse(grammar, outer, live, true);
+        assert first != null;
+    }
+
     private record Outer(String word, Inner... inners) implements ModelTest.SimpleModel {
 
     }
