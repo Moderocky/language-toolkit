@@ -14,7 +14,7 @@ public class LexerTest extends TestCase {
 
     @Test
     public void testLexer() throws Throwable {
-        Tokens test = new Lexer(new StringReader("test")).run();
+        Tokens test = new Lexer(new StringReader("test")).run().remaining();
         assert test.size() == 1;
         assert test.first() instanceof WordToken;
     }
@@ -22,8 +22,7 @@ public class LexerTest extends TestCase {
     @Test
     @SuppressWarnings("AssertWithSideEffects")
     public void testSeparation() throws Throwable {
-        Tokens test = new Lexer(new StringReader("test test1 1 -3 5++5 --27 -foo +foo")).run();
-        test.removeWhitespace();
+        Tokens test = new Lexer(new StringReader("test test1 1 -3 5++5 --27 -foo +foo")).run().remaining();
         Iterator<Token> iterator = test.iterator();
         assert iterator.next() instanceof WordToken word
             && word.value().equals("test");
@@ -59,8 +58,7 @@ public class LexerTest extends TestCase {
     @Test
     @SuppressWarnings("AssertWithSideEffects")
     public void testSymbols() throws Throwable {
-        Tokens test = new Lexer(new StringReader("test-test foo-1 --1 foo+2 1-1")).run();
-        test.removeWhitespace();
+        Tokens test = new Lexer(new StringReader("test-test foo-1 --1 foo+2 1-1")).run().remaining();
         Iterator<Token> iterator = test.iterator();
         assert iterator.next() instanceof WordToken word
             && word.value().equals("test");

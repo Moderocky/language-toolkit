@@ -1,9 +1,10 @@
 package mx.kenzie.toolkit.parser;
 
 import mx.kenzie.toolkit.error.ParsingException;
-import mx.kenzie.toolkit.lexer.Mark;
-import mx.kenzie.toolkit.lexer.TokenStream;
 import mx.kenzie.toolkit.lexer.Tokens;
+import mx.kenzie.toolkit.lexer.parallel.Parallel;
+import mx.kenzie.toolkit.lexer.stream.Mark;
+import mx.kenzie.toolkit.lexer.stream.TokenStream;
 import mx.kenzie.toolkit.lexer.token.Token;
 import mx.kenzie.toolkit.lexer.token.WordLikeToken;
 import mx.kenzie.toolkit.model.Model;
@@ -20,23 +21,31 @@ public interface Parser {
 
     default Model parse(Parser outer, Unit unit, TokenStream input, boolean all) throws ParsingException {
         final List<ParsingException> errors = new ArrayList<>();
-        for (Parser parser : this.parsers(outer, unit)) {
-            try (Mark mark = input.markForReset()) {
+        Parallel<Parser> parallel = input.parallel(this.parsers(outer, unit));
+        Iterable<Result> spread = parallel.spread(parser -> {
+            TokenStream stream = input.fork();
+            try (Mark mark = stream.markForReset()) {
                 try {
-                    final Model stmt = parser.parse(outer, input, all);
+                    final Model stmt = parser.parse(outer, stream, all);
                     if (stmt == null)
                         throw new ParsingException("Nothing returned by " + parser.getClass().getSimpleName());
-                    if (all && input.hasNext())
+                    if (all && stream.hasNext())
                         throw new ParsingException("Too many tokens remaining for " + parser.getClass()
-                            .getSimpleName() + ": " + input.remaining());
+                            .getSimpleName() + ": " + stream.remaining());
                     mark.discard();
-                    return stmt;
+                    return Result.of(stmt, stream.forkPoint());
                 } catch (ParsingException fault) {
-                    errors.add(fault);
+                    return Result.of(fault);
                 }
             }
+        });
+        for (Result result : spread) {
+            if (result.success()) {
+                result.forkPoint().accept(input);
+                return result.model();
+            }
+            errors.add(result.error());
         }
-
         ParsingException exception;
         if (!input.hasNext()) exception = new ParsingException("No tokens remaining.");
         else if (all)
@@ -49,7 +58,7 @@ public interface Parser {
     Model parse(Parser outer, TokenStream input, boolean all) throws ParsingException;
 
     default Tokens take(TokenStream input, int amount) throws ParsingException {
-        Tokens list = Tokens.empty();
+        Tokens list = Tokens.simple();
         for (int i = 0; i < amount; i++) {
             if (!input.hasNext()) throw new ParsingException("Reached end of tokens taking " + amount + " items.");
             list.add(input.next());
@@ -59,7 +68,7 @@ public interface Parser {
 
     default <TokenType extends Token> Tokens getEverythingUntil(Class<? super TokenType> type, TokenStream input,
                                                                 Predicate<TokenType> predicate) {
-        Tokens tokens = Tokens.empty();
+        Tokens tokens = Tokens.simple();
         try (Mark _ = input.markForDiscard()) {
             while (input.hasNext()) {
                 Token next = input.next();

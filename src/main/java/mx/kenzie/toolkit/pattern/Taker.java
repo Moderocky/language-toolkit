@@ -1,7 +1,7 @@
 package mx.kenzie.toolkit.pattern;
 
 import mx.kenzie.toolkit.error.ParsingException;
-import mx.kenzie.toolkit.lexer.TokenStream;
+import mx.kenzie.toolkit.lexer.stream.TokenStream;
 import mx.kenzie.toolkit.lexer.token.NumberToken;
 import mx.kenzie.toolkit.lexer.token.TextToken;
 import mx.kenzie.toolkit.lexer.token.WordLikeToken;

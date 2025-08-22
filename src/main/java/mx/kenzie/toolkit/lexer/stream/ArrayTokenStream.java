@@ -1,22 +1,38 @@
-package mx.kenzie.toolkit.lexer;
+package mx.kenzie.toolkit.lexer.stream;
 
 import mx.kenzie.toolkit.error.ParsingError;
+import mx.kenzie.toolkit.lexer.IntStack;
+import mx.kenzie.toolkit.lexer.Position;
+import mx.kenzie.toolkit.lexer.Tokens;
 import mx.kenzie.toolkit.lexer.token.Token;
 
 import java.util.Arrays;
 import java.util.Iterator;
 import java.util.Stack;
+import java.util.function.Consumer;
 
-class KnownTokenStream extends TokenStream {
+public class ArrayTokenStream extends TokenStream {
 
     protected final Token[] tokens;
     protected Stack<Integer> marks;
     protected int current;
 
-    public KnownTokenStream(Tokens tokens) {
+    public ArrayTokenStream(Tokens tokens) {
         super();
         this.tokens = tokens.toArray();
         this.marks = new IntStack();
+    }
+
+    ArrayTokenStream(ArrayTokenStream source) {
+        super();
+        this.tokens = source.tokens;
+        this.marks = new IntStack((IntStack) source.marks);
+        this.current = source.current;
+    }
+
+    @Override
+    public TokenStream fork() {
+        return new ArrayTokenStream(this);
     }
 
     @Override
@@ -29,6 +45,17 @@ class KnownTokenStream extends TokenStream {
         if (current >= tokens.length)
             throw new ParsingError("Reached the end of available tokens.");
         return tokens[current++];
+    }
+
+    @Override
+    public Consumer<TokenStream> forkPoint() {
+        final var here = current;
+        final var marks = new IntStack((IntStack) this.marks);
+        ForkingMark<ArrayTokenStream> mark = new ForkingMark<>(this, (stream) -> {
+            stream.current = here;
+            stream.marks = new IntStack(marks);
+        });
+        return mark;
     }
 
     @Override
@@ -68,7 +95,7 @@ class KnownTokenStream extends TokenStream {
 
     @Override
     public Tokens remaining() {
-        final Tokens list = new TokenList();
+        final Tokens list = new FixedTokenList();
         for (Token token : this) list.add(token);
         return list;
     }

@@ -2,6 +2,7 @@ package mx.kenzie.toolkit.lexer;
 
 import mx.kenzie.toolkit.ModelTest;
 import mx.kenzie.toolkit.error.ParsingException;
+import mx.kenzie.toolkit.lexer.stream.TokenStream;
 import mx.kenzie.toolkit.model.Model;
 import mx.kenzie.toolkit.parser.Unit;
 import mx.kenzie.toolkit.pattern.Grammar;

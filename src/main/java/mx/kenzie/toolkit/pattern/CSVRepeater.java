@@ -1,9 +1,9 @@
 package mx.kenzie.toolkit.pattern;
 
 import mx.kenzie.toolkit.error.ParsingException;
-import mx.kenzie.toolkit.lexer.Mark;
 import mx.kenzie.toolkit.lexer.Position;
-import mx.kenzie.toolkit.lexer.TokenStream;
+import mx.kenzie.toolkit.lexer.stream.Mark;
+import mx.kenzie.toolkit.lexer.stream.TokenStream;
 import mx.kenzie.toolkit.lexer.token.WordLikeToken;
 import mx.kenzie.toolkit.parser.Parser;
 

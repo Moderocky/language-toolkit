@@ -1,5 +1,6 @@
 package mx.kenzie.toolkit.lexer;
 
+import java.util.Arrays;
 import java.util.EmptyStackException;
 import java.util.Iterator;
 import java.util.Stack;
@@ -12,6 +13,12 @@ public class IntStack extends Stack<Integer> {
     public IntStack() {
         super();
         this.contents = new int[8];
+    }
+
+    public IntStack(IntStack parent) {
+        super();
+        this.contents = Arrays.copyOf(parent.contents, parent.contents.length);
+        this.size = parent.size;
     }
 
     protected void grow() {

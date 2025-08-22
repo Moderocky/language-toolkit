@@ -1,9 +1,9 @@
 package mx.kenzie.toolkit.parser;
 
 import mx.kenzie.toolkit.error.ParsingException;
-import mx.kenzie.toolkit.lexer.Mark;
-import mx.kenzie.toolkit.lexer.TokenStream;
 import mx.kenzie.toolkit.lexer.Tokens;
+import mx.kenzie.toolkit.lexer.stream.Mark;
+import mx.kenzie.toolkit.lexer.stream.TokenStream;
 import mx.kenzie.toolkit.lexer.token.StructureToken;
 import mx.kenzie.toolkit.lexer.token.Token;
 
@@ -16,7 +16,7 @@ public interface BracketedParser extends Parser {
             if (first.symbol() != open)
                 throw new ParsingException("Expected an opening " + open + " bracket, got " + first);
             int count = 1;
-            Tokens list = Tokens.empty();
+            Tokens list = Tokens.simple();
             for (Token token : input) {
                 if (token instanceof StructureToken structure) {
                     if (structure.symbol() == open) ++count;

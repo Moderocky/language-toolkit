@@ -1,9 +1,9 @@
 package mx.kenzie.toolkit.parser;
 
 import mx.kenzie.toolkit.error.ParsingException;
-import mx.kenzie.toolkit.lexer.Mark;
-import mx.kenzie.toolkit.lexer.TokenStream;
 import mx.kenzie.toolkit.lexer.Tokens;
+import mx.kenzie.toolkit.lexer.stream.Mark;
+import mx.kenzie.toolkit.lexer.stream.TokenStream;
 import mx.kenzie.toolkit.lexer.token.StructureToken;
 import mx.kenzie.toolkit.model.Model;
 
@@ -17,7 +17,7 @@ public interface CSVParser extends Parser {
         final List<Model> models = new ArrayList<>();
         outer:
         while (stream.hasNext()) {
-            Tokens until = Tokens.empty();
+            Tokens until = Tokens.simple();
             do {
                 try (Mark mark = stream.markForReset()) {
                     until.addAll(this.getEverythingUntil(StructureToken.class, stream, token -> token.symbol() == ','));

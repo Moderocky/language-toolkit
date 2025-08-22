@@ -2,8 +2,7 @@ package mx.kenzie.toolkit.pattern;
 
 import mx.kenzie.toolkit.error.ParsingException;
 import mx.kenzie.toolkit.lexer.Lexer;
-import mx.kenzie.toolkit.lexer.TokenStream;
-import mx.kenzie.toolkit.lexer.Tokens;
+import mx.kenzie.toolkit.lexer.stream.TokenStream;
 import mx.kenzie.toolkit.model.Model;
 import mx.kenzie.toolkit.parser.Parser;
 import mx.kenzie.toolkit.parser.Unit;
@@ -62,14 +61,12 @@ public class Grammar implements Parser {
 
     public Model parse(Unit unit, Reader source) throws ParsingException {
         Lexer lexer = new Lexer(source);
-        Tokens list;
+        TokenStream stream;
         try {
-            list = lexer.run();
+            stream = lexer.run();
         } catch (IOException e) {
             throw new IOError(e);
         }
-        list.removeWhitespace();
-        TokenStream stream = list.forParsing();
         return this.parse(unit, stream);
     }
 

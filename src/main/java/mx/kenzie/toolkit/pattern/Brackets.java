@@ -1,8 +1,8 @@
 package mx.kenzie.toolkit.pattern;
 
 import mx.kenzie.toolkit.error.ParsingException;
-import mx.kenzie.toolkit.lexer.TokenStream;
 import mx.kenzie.toolkit.lexer.Tokens;
+import mx.kenzie.toolkit.lexer.stream.TokenStream;
 import mx.kenzie.toolkit.parser.BracketedParser;
 import mx.kenzie.toolkit.parser.Parser;
 

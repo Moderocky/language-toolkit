@@ -2,7 +2,7 @@ package mx.kenzie.toolkit.pattern;
 
 import mx.kenzie.toolkit.error.ParsingException;
 import mx.kenzie.toolkit.lexer.Lexer;
-import mx.kenzie.toolkit.lexer.TokenStream;
+import mx.kenzie.toolkit.lexer.stream.TokenStream;
 import mx.kenzie.toolkit.lexer.Tokens;
 import org.junit.Test;
 
@@ -15,14 +15,11 @@ public class PatternTest {
 
     protected TokenStream sample(String string) {
         Lexer lexer = new Lexer(new StringReader(string));
-        Tokens list;
         try {
-            list = lexer.run();
+            return lexer.run();
         } catch (IOException ex) {
             throw new AssertionError(ex);
         }
-        list.removeWhitespace();
-        return list.forParsing();
     }
 
     protected Input test(Pattern pattern, String string) {

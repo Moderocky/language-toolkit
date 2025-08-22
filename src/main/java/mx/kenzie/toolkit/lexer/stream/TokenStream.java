@@ -1,19 +1,27 @@
-package mx.kenzie.toolkit.lexer;
+package mx.kenzie.toolkit.lexer.stream;
 
+import mx.kenzie.toolkit.lexer.Position;
+import mx.kenzie.toolkit.lexer.Tokens;
+import mx.kenzie.toolkit.lexer.parallel.Parallel;
 import mx.kenzie.toolkit.lexer.token.Token;
 
 import java.util.Iterator;
+import java.util.function.Consumer;
 
 public abstract class TokenStream implements Iterator<Token>, Iterable<Token> {
 
     public TokenStream() {
     }
 
+    public abstract TokenStream fork();
+
     @Override
     public abstract boolean hasNext();
 
     @Override
     public abstract Token next();
+
+    public abstract Consumer<TokenStream> forkPoint();
 
     public Mark markForReset() {
         this.mark();
@@ -43,5 +51,9 @@ public abstract class TokenStream implements Iterator<Token>, Iterable<Token> {
     public abstract Tokens remaining();
 
     public abstract Position here();
+
+    public <Input> Parallel<Input> parallel(Iterable<Input> iterable) {
+        return Parallel.inPlace(iterable);
+    }
 
 }
