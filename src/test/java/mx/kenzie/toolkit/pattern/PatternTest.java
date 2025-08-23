@@ -3,7 +3,6 @@ package mx.kenzie.toolkit.pattern;
 import mx.kenzie.toolkit.error.ParsingException;
 import mx.kenzie.toolkit.lexer.Lexer;
 import mx.kenzie.toolkit.lexer.stream.TokenStream;
-import mx.kenzie.toolkit.lexer.Tokens;
 import org.junit.Test;
 
 import java.io.IOException;
@@ -262,6 +261,48 @@ public class PatternTest {
 
     @Test
     public void testToString() {
+    }
+
+    @Test
+    public void maybeTest() {
+        Pattern pattern = pattern(maybe("foo"));
+        assert pattern.toString().equals("maybe(foo)") : pattern.toString();
+        assert pattern.elements().length == 1;
+        assert !this.test(pattern, "foo").hasNext();
+        assert !this.test(pattern, "").hasNext();
+
+        pattern = pattern("a", maybe("foo"), "b");
+        assert pattern.toString().equals("a maybe(foo) b") : pattern.toString();
+        assert pattern.elements().length == 3;
+        assert !this.test(pattern, "a foo b").hasNext();
+        assert !this.test(pattern, "a b").hasNext();
+    }
+
+    @Test(expected = AssertionError.class)
+    public void maybeTestFailure() {
+        Pattern pattern = pattern(maybe("foo"));
+        assert this.test(pattern, "bar").hasNext();
+    }
+
+    @Test
+    public void anyTest() {
+        Pattern pattern = pattern(any("foo", "bar"));
+        assert pattern.toString().equals("any(foo, bar)") : pattern.toString();
+        assert pattern.elements().length == 1;
+        assert !this.test(pattern, "foo").hasNext();
+        assert !this.test(pattern, "bar").hasNext();
+
+        pattern = pattern("a", any("foo", "bar"), "b");
+        assert pattern.toString().equals("a any(foo, bar) b") : pattern.toString();
+        assert pattern.elements().length == 3;
+        assert !this.test(pattern, "a foo b").hasNext();
+        assert !this.test(pattern, "a bar b").hasNext();
+    }
+
+    @Test(expected = AssertionError.class)
+    public void anyTestFailure() {
+        Pattern pattern = pattern(any("foo", "bar"));
+        assert !this.test(pattern, "").hasNext();
     }
 
 }

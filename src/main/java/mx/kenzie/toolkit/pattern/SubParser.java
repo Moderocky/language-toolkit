@@ -37,6 +37,10 @@ interface SubParser {
                 if (!word.value().equals(string))
                     throw new ParsingException("Expected '" + string + "' but got '" + word.value() + "'");
             }
+            case Matcher matcher -> {
+                if (!matcher.match(input))
+                    throw new ParsingException("Expected " + matcher + " but found " + input.remaining() + "...");
+            }
             case Taker taker -> results.add(taker.take(input, outer));
             case SubParser thing -> results.add(thing.read(outer, input, all));
             case Unit unit -> results.add(outer.parse(outer, unit, input, all));

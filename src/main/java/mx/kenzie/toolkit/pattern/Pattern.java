@@ -10,6 +10,14 @@ public record Pattern(CharSequence... elements) implements CharSequence, Element
         return new Pattern(elements);
     }
 
+    public static CharSequence maybe(String word) {
+        return new Optional(word);
+    }
+
+    public static CharSequence any(String... words) {
+        return new Choice(words);
+    }
+
     public static CharSequence round(CharSequence... elements) {
         return brackets('(', ')', elements);
     }

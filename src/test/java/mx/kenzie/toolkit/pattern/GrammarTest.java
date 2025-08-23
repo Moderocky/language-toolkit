@@ -7,8 +7,6 @@ import mx.kenzie.toolkit.model.Model;
 import mx.kenzie.toolkit.parser.Unit;
 import org.junit.Test;
 
-import java.io.PrintStream;
-
 import static mx.kenzie.toolkit.pattern.Pattern.pattern;
 
 public class GrammarTest {

@@ -40,6 +40,11 @@ public class ImitationLambdaStructureTest extends ImitationCompilerTest {
         return grammar;
     }
 
+    @Override
+    public void create() throws Throwable {
+
+    }
+
     @Test
     public void simpleModel() throws Throwable {
         Grammar grammar = this.load();
@@ -49,10 +54,10 @@ public class ImitationLambdaStructureTest extends ImitationCompilerTest {
         ModelProgram<ProgramContext> program = new ImitationCompiler(parsed).create();
         TestContext context = new TestContext();
         program.run(context);
-        assert context.variables.get("id") instanceof Function function
-            && function.variable.equals("x")
-            && function.expression instanceof Variable variable
-            && variable.name.equals("x");
+        assert context.variables.get("id") instanceof Function (String variable, Expression expression1)
+            && variable.equals("x")
+            && expression1 instanceof Variable (String name)
+            && name.equals("x");
     }
 
     @Test
@@ -64,10 +69,10 @@ public class ImitationLambdaStructureTest extends ImitationCompilerTest {
         ModelProgram<ProgramContext> program = new ImitationCompiler(parsed).create();
         TestContext context = new TestContext();
         program.run(context);
-        assert context.output instanceof Function function
-            && function.variable.equals("x")
-            && function.expression instanceof Variable variable
-            && variable.name.equals("x");
+        assert context.output instanceof Function (String variable, Expression expression1)
+            && variable.equals("x")
+            && expression1 instanceof Variable (String name)
+            && name.equals("x");
     }
 
     @Test
@@ -79,10 +84,10 @@ public class ImitationLambdaStructureTest extends ImitationCompilerTest {
         ModelProgram<ProgramContext> program = new ImitationCompiler(parsed).create();
         TestContext context = new TestContext();
         program.run(context);
-        assert context.output instanceof Function function
-            && function.variable.equals("x")
-            && function.expression instanceof Variable variable
-            && variable.name.equals("x");
+        assert context.output instanceof Function (String variable, Expression expression1)
+            && variable.equals("x")
+            && expression1 instanceof Variable (String name)
+            && name.equals("x");
     }
 
     @Test
@@ -94,18 +99,13 @@ public class ImitationLambdaStructureTest extends ImitationCompilerTest {
         ModelProgram<ProgramContext> program = new ImitationCompiler(parsed).create();
         TestContext context = new TestContext();
         program.run(context);
-        assert context.output instanceof Function function
-            && function.variable.equals("x")
-            && function.expression instanceof Function second
-            && second.variable.equals("y")
-            && second.expression instanceof Variable variable
-            && variable.name.equals("y")
+        assert context.output instanceof Function (String variable, Expression expression1)
+            && variable.equals("x")
+            && expression1 instanceof Function (String variable1, Expression expression2)
+            && variable1.equals("y")
+            && expression2 instanceof Variable (String name)
+            && name.equals("y")
             : context.output;
-    }
-
-    @Override
-    public void create() throws Throwable {
-
     }
 
     public record Function(String variable, Expression expression) implements Expression {
@@ -143,11 +143,11 @@ public class ImitationLambdaStructureTest extends ImitationCompilerTest {
         public Object evaluate(TestContext context) throws Throwable {
             Expression a = (Expression) first.evaluate(context);
             Expression b = (Expression) second.evaluate(context);
-            if (a instanceof Function function) {
+            if (a instanceof Function (String variable, Expression expression1)) {
                 TestContext inner = new TestContext();
                 inner.variables.putAll(context.variables);
-                inner.variables.put(function.variable, b);
-                return function.expression.evaluate(inner);
+                inner.variables.put(variable, b);
+                return expression1.evaluate(inner);
 //                Expression evaluated = (Expression) function.expression.evaluate(inner);
 //                return evaluated.evaluate(context);
             }
